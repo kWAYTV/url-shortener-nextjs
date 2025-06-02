@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
-import EmailVerifiedContent from '@/components/core/auth/email-verified/email-verified-content';
+import EmailVerifiedFormContent from '@/components/core/auth/email-verified/email-verified-content';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -11,7 +11,7 @@ function EmailVerifiedPageContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
 
-  return <EmailVerifiedContent error={error} />;
+  return <EmailVerifiedFormContent error={error} />;
 }
 
 export default function EmailVerifiedPage() {

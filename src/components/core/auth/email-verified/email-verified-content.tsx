@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
-export default function EmailVerifiedContent({
+export default function EmailVerifiedFormContent({
   error
 }: {
   error: string | null;
@@ -40,8 +40,14 @@ export default function EmailVerifiedContent({
                 <div className='text-left'>
                   <p className='font-medium'>What should I do?</p>
                   <p className='text-muted-foreground mt-1'>
-                    Please check your email for a new verification link or
-                    request a new one from your account settings.
+                    Please check your email for a verification link or{' '}
+                    <Link
+                      href='/resend-verification-email'
+                      className='text-primary hover:underline'
+                    >
+                      request a new one
+                    </Link>
+                    .
                   </p>
                 </div>
               </div>

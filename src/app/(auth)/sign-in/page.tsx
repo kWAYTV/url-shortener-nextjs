@@ -1,4 +1,4 @@
-import SignIn from '@/components/core/auth/sign-in/sign-in-form';
+import SignInForm from '@/components/core/auth/sign-in/sign-in-form';
 
 export default function SignInPage() {
   return (
@@ -13,7 +13,7 @@ export default function SignInPage() {
           </p>
         </div>
 
-        <SignIn />
+        <SignInForm />
       </div>
     </div>
   );

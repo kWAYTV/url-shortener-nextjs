@@ -9,13 +9,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -29,7 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { signUp } from '@/lib/auth-client';
 import { type SignUpSchema, signUpSchema } from '@/schemas/auth';
 
-export default function SignUp() {
+export default function SignUpForm() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -92,13 +86,7 @@ export default function SignUp() {
   };
 
   return (
-    <Card className='z-50 max-w-md rounded-md rounded-t-none'>
-      <CardHeader>
-        <CardTitle className='text-lg md:text-xl'>Sign Up</CardTitle>
-        <CardDescription className='text-xs md:text-sm'>
-          Enter your information to create an account
-        </CardDescription>
-      </CardHeader>
+    <Card>
       <CardContent>
         <Form {...form}>
           <form

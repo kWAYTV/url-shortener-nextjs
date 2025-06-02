@@ -8,13 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -25,35 +19,35 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { forgetPassword } from '@/lib/auth-client';
+import { sendVerificationEmail } from '@/lib/auth-client';
 import {
-  type ForgotPasswordSchema,
-  forgotPasswordSchema
+  type ResendVerificationEmailSchema,
+  resendVerificationEmailSchema
 } from '@/schemas/auth';
 
-export default function ForgotPasswordForm() {
+export default function ResendVerificationEmailForm() {
   const [isPending, setIsPending] = useState(false);
 
-  const form = useForm<ForgotPasswordSchema>({
-    resolver: zodResolver(forgotPasswordSchema),
+  const form = useForm<ResendVerificationEmailSchema>({
+    resolver: zodResolver(resendVerificationEmailSchema),
     defaultValues: {
       email: ''
     }
   });
 
-  const onSubmit = async (data: ForgotPasswordSchema) => {
+  const onSubmit = async (data: ResendVerificationEmailSchema) => {
     setIsPending(true);
 
-    const { error } = await forgetPassword({
+    const { error } = await sendVerificationEmail({
       email: data.email,
-      redirectTo: '/reset-password'
+      callbackURL: '/email-verified'
     });
 
     if (error) {
       toast.error(error.message);
     } else {
       toast.success(
-        'If an account exists with this email, you will receive a password reset link.'
+        'If an account exists with this email, you will receive a verification link.'
       );
     }
     setIsPending(false);
@@ -61,15 +55,6 @@ export default function ForgotPasswordForm() {
 
   return (
     <Card className='w-full max-w-sm'>
-      <CardHeader>
-        <CardTitle className='text-lg md:text-xl'>
-          Reset your password
-        </CardTitle>
-        <CardDescription className='text-xs md:text-sm'>
-          Enter your email address and we&apos;ll send you a link to reset your
-          password
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='grid gap-4'>
@@ -99,7 +84,7 @@ export default function ForgotPasswordForm() {
               {isPending ? (
                 <Loader2 size={16} className='animate-spin' />
               ) : (
-                'Send Reset Link'
+                'Send Verification Link'
               )}
             </Button>
 

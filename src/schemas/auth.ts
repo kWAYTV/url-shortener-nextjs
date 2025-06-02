@@ -31,6 +31,10 @@ export const signInSchema = object({
   password: getPasswordSchema('password')
 });
 
+export const resendVerificationEmailSchema = object({
+  email: getEmailSchema()
+});
+
 export const forgotPasswordSchema = object({
   email: getEmailSchema()
 });
@@ -45,5 +49,8 @@ export const resetPasswordSchema = object({
 
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 export type SignInSchema = z.infer<typeof signInSchema>;
+export type ResendVerificationEmailSchema = z.infer<
+  typeof resendVerificationEmailSchema
+>;
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;

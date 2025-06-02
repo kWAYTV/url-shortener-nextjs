@@ -8,13 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
@@ -31,7 +25,7 @@ import { signIn } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { type SignInSchema, signInSchema } from '@/schemas/auth';
 
-export default function SignIn() {
+export default function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -93,12 +87,6 @@ export default function SignIn() {
 
   return (
     <Card className='max-w-md'>
-      <CardHeader>
-        <CardTitle className='text-lg md:text-xl'>Sign In</CardTitle>
-        <CardDescription className='text-xs md:text-sm'>
-          Enter your email below to login to your account
-        </CardDescription>
-      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form

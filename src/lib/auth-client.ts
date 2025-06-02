@@ -7,7 +7,8 @@ export const {
   signUp,
   useSession,
   forgetPassword,
-  resetPassword
+  resetPassword,
+  sendVerificationEmail
 } = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
 
