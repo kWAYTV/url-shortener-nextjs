@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { isValidUrl } from '@/lib/url-utils';
 
 export const urlSchema = z.object({
-  url: z.string().min(1, 'URL is required'),
+  url: z.string().min(1, 'URL is required').refine(isValidUrl, {
+    message: 'Please enter a valid URL'
+  }),
   customCode: z
     .string()
     .min(3, 'Custom code must be at least 3 characters')

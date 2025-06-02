@@ -1,29 +1,20 @@
 export function isValidUrl(url: string): boolean {
-  if (!url || typeof url !== 'string') return false;
-
   try {
     const urlObj = new URL(url);
-    return ['http:', 'https:'].includes(urlObj.protocol);
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
   } catch {
     return false;
   }
 }
 
 export function ensureHttps(url: string): string {
-  if (!url || typeof url !== 'string') return url;
-
-  const trimmedUrl = url.trim();
-
-  // Already has https
-  if (trimmedUrl.startsWith('https://')) {
-    return trimmedUrl;
+  if (!url.startsWith('https://') && !url.startsWith('https://')) {
+    return `https://${url}`;
   }
 
-  // Convert http to https
-  if (trimmedUrl.startsWith('http://')) {
-    return trimmedUrl.replace('http://', 'https://');
+  if (url.startsWith('http://')) {
+    return url.replace('http://', 'https://');
   }
 
-  // Add https prefix
-  return `https://${trimmedUrl}`;
+  return url;
 }
