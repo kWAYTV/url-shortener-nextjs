@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import AuthButtons from '@/components/core/auth/shared/auth-buttons';
+import { ModeToggle } from '@/components/ui/mode-toggle';
 
 export default function Navbar() {
   return (
@@ -8,7 +9,10 @@ export default function Navbar() {
       <Link href='/' className='text-xl font-bold'>
         short
       </Link>
-      <AuthButtons />
+      <div className='flex items-center gap-2'>
+        <AuthButtons />
+        <ModeToggle />
+      </div>
     </nav>
   );
 }
