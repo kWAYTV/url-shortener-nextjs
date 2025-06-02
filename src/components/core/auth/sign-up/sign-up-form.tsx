@@ -41,7 +41,37 @@ export default function SignUp() {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+      toast.success('Image uploaded');
     }
+  };
+
+  const handleImageRemove = () => {
+    setImage(null);
+    setImagePreview(null);
+    toast.success('Image removed');
+  };
+
+  const handleSignUp = async () => {
+    await signUp.email({
+      email,
+      password,
+      name: `${firstName} ${lastName}`,
+      image: image ? await convertImageToBase64(image) : '',
+      callbackURL: '/dashboard',
+      fetchOptions: {
+        onRequest: () => setLoading(true),
+        onResponse: () => setLoading(false),
+        onError: ctx => {
+          toast.error(ctx.error.message);
+        },
+        onSuccess: async () => {
+          router.push('/dashboard');
+          toast.success(
+            'Account created. Please check your email for verification.'
+          );
+        }
+      }
+    });
   };
 
   return (
@@ -61,9 +91,7 @@ export default function SignUp() {
                 id='first-name'
                 placeholder='John'
                 required
-                onChange={e => {
-                  setFirstName(e.target.value);
-                }}
+                onChange={e => setFirstName(e.target.value)}
                 value={firstName}
               />
             </div>
@@ -73,9 +101,7 @@ export default function SignUp() {
                 id='last-name'
                 placeholder='Doe'
                 required
-                onChange={e => {
-                  setLastName(e.target.value);
-                }}
+                onChange={e => setLastName(e.target.value)}
                 value={lastName}
               />
             </div>
@@ -87,9 +113,7 @@ export default function SignUp() {
               type='email'
               placeholder='email@example.com'
               required
-              onChange={e => {
-                setEmail(e.target.value);
-              }}
+              onChange={e => setEmail(e.target.value)}
               value={email}
             />
           </div>
@@ -137,13 +161,7 @@ export default function SignUp() {
                   className='w-full'
                 />
                 {imagePreview && (
-                  <X
-                    className='cursor-pointer'
-                    onClick={() => {
-                      setImage(null);
-                      setImagePreview(null);
-                    }}
-                  />
+                  <X className='cursor-pointer' onClick={handleImageRemove} />
                 )}
               </div>
             </div>
@@ -155,29 +173,7 @@ export default function SignUp() {
             type='submit'
             className='w-full'
             disabled={loading}
-            onClick={async () => {
-              await signUp.email({
-                email,
-                password,
-                name: `${firstName} ${lastName}`,
-                image: image ? await convertImageToBase64(image) : '',
-                callbackURL: '/dashboard',
-                fetchOptions: {
-                  onResponse: () => {
-                    setLoading(false);
-                  },
-                  onRequest: () => {
-                    setLoading(true);
-                  },
-                  onError: ctx => {
-                    toast.error(ctx.error.message);
-                  },
-                  onSuccess: async () => {
-                    router.push('/dashboard');
-                  }
-                }
-              });
-            }}
+            onClick={handleSignUp}
           >
             {loading ? (
               <Loader2 size={16} className='animate-spin' />

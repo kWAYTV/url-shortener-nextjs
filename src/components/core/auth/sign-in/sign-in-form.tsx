@@ -12,18 +12,46 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { signIn } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleEmailSignIn = async () => {
+    await signIn.email(
+      { email, password },
+      {
+        onRequest: () => setLoading(true),
+        onResponse: () => setLoading(false),
+        onError: ctx => {
+          toast.error(ctx.error.message);
+        }
+      }
+    );
+  };
+
+  const handleSocialSignIn = async (provider: 'github' | 'google') => {
+    await signIn.social(
+      {
+        provider,
+        callbackURL: '/dashboard'
+      },
+      {
+        onRequest: () => setLoading(true),
+        onResponse: () => setLoading(false),
+        onError: ctx => {
+          toast.error(ctx.error.message);
+        }
+      }
+    );
+  };
 
   return (
     <Card className='max-w-md'>
@@ -42,9 +70,7 @@ export default function SignIn() {
               type='email'
               placeholder='email@example.com'
               required
-              onChange={e => {
-                setEmail(e.target.value);
-              }}
+              onChange={e => setEmail(e.target.value)}
               value={email}
             />
           </div>
@@ -70,42 +96,13 @@ export default function SignIn() {
             />
           </div>
 
-          <div className='flex items-center gap-2'>
-            <Checkbox
-              id='remember'
-              onClick={() => {
-                setRememberMe(!rememberMe);
-              }}
-            />
-            <Label htmlFor='remember'>Remember me</Label>
-          </div>
-
           <Button
             type='submit'
             className='w-full'
             disabled={loading}
-            onClick={async () => {
-              await signIn.email(
-                {
-                  email,
-                  password
-                },
-                {
-                  onRequest: () => {
-                    setLoading(true);
-                  },
-                  onResponse: () => {
-                    setLoading(false);
-                  }
-                }
-              );
-            }}
+            onClick={handleEmailSignIn}
           >
-            {loading ? (
-              <Loader2 size={16} className='animate-spin' />
-            ) : (
-              <p> Login </p>
-            )}
+            {loading ? <Loader2 size={16} className='animate-spin' /> : 'Login'}
           </Button>
 
           <div className='relative'>
@@ -113,7 +110,7 @@ export default function SignIn() {
               <Separator className='w-full' />
             </div>
             <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-background text-muted-foreground px-2'>
+              <span className='text-muted-foreground px-2'>
                 Or continue with
               </span>
             </div>
@@ -129,22 +126,7 @@ export default function SignIn() {
               variant='outline'
               className={cn('w-full gap-2')}
               disabled={loading}
-              onClick={async () => {
-                await signIn.social(
-                  {
-                    provider: 'github',
-                    callbackURL: '/dashboard'
-                  },
-                  {
-                    onRequest: () => {
-                      setLoading(true);
-                    },
-                    onResponse: () => {
-                      setLoading(false);
-                    }
-                  }
-                );
-              }}
+              onClick={() => handleSocialSignIn('github')}
             >
               <svg
                 xmlns='http://www.w3.org/2000/svg'

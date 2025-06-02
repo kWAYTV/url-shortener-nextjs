@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/db';
-import { ensureHttps } from '@/lib/utils';
+import { ensureHttps } from '@/lib/url-utils';
 import { urls } from '@/schemas/db';
 import { shortenUrlSchema } from '@/schemas/url';
 import { type ApiResponse } from '@/types/api';

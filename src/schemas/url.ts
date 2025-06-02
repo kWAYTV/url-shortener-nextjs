@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { isValidUrl } from '@/lib/utils';
+import { isValidUrl } from '@/lib/url-utils';
 
 export const urlSchema = z.object({
   url: z.string().min(1, 'URL is required'),
