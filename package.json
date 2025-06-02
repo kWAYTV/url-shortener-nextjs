@@ -33,7 +33,7 @@
     "drizzle-orm": "^0.44.1",
     "lucide-react": "^0.511.0",
     "nanoid": "^5.1.5",
-    "next": "15.4.0-canary.61",
+    "next": "canary",
     "next-themes": "^0.4.6",
     "pg": "^8.16.0",
     "postgres": "^3.4.7",
