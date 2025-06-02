@@ -1,8 +1,11 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,24 +15,43 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { signIn } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { type SignInSchema, signInSchema } from '@/schemas/auth';
 
 export default function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleEmailSignIn = async () => {
+  const form = useForm<SignInSchema>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+
+  const handleEmailSignIn = async (data: SignInSchema) => {
     await signIn.email(
-      { email, password },
+      { email: data.email, password: data.password },
       {
-        onRequest: () => setLoading(true),
-        onResponse: () => setLoading(false),
+        onRequest: () => {
+          setLoading(true);
+          toast.loading('Signing in...');
+        },
+        onResponse: () => {
+          setLoading(false);
+          toast.success('Signed in successfully');
+        },
         onError: ctx => {
           toast.error(ctx.error.message);
         }
@@ -44,8 +66,14 @@ export default function SignIn() {
         callbackURL: '/dashboard'
       },
       {
-        onRequest: () => setLoading(true),
-        onResponse: () => setLoading(false),
+        onRequest: () => {
+          setLoading(true);
+          toast.loading('Signing in...');
+        },
+        onResponse: () => {
+          setLoading(false);
+          toast.success('Signed in successfully');
+        },
         onError: ctx => {
           toast.error(ctx.error.message);
         }
@@ -62,96 +90,121 @@ export default function SignIn() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className='grid gap-4'>
-          <div className='grid gap-2'>
-            <Label htmlFor='email'>Email</Label>
-            <Input
-              id='email'
-              type='email'
-              placeholder='email@example.com'
-              required
-              onChange={e => setEmail(e.target.value)}
-              value={email}
-            />
-          </div>
-
-          <div className='grid gap-2'>
-            <div className='flex items-center'>
-              <Label htmlFor='password'>Password</Label>
-              <Link
-                href='/forgot-password'
-                className='ml-auto inline-block text-sm underline'
-              >
-                Forgot your password?
-              </Link>
-            </div>
-
-            <Input
-              id='password'
-              type='password'
-              placeholder='Password'
-              autoComplete='password'
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
-          </div>
-
-          <Button
-            type='submit'
-            className='w-full'
-            disabled={loading}
-            onClick={handleEmailSignIn}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleEmailSignIn)}
+            className='grid gap-4'
           >
-            {loading ? <Loader2 size={16} className='animate-spin' /> : 'Login'}
-          </Button>
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='grid gap-2'>
+                    <FormLabel htmlFor='email'>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        id='email'
+                        type='email'
+                        placeholder='email@example.com'
+                        required
+                        {...field}
+                        autoComplete='email'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
 
-          <div className='relative'>
-            <div className='absolute inset-0 flex items-center'>
-              <Separator className='w-full' />
-            </div>
-            <div className='relative flex justify-center text-xs uppercase'>
-              <span className='text-muted-foreground px-2'>
-                Or continue with
-              </span>
-            </div>
-          </div>
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='grid gap-2'>
+                    <div className='flex items-center'>
+                      <FormLabel htmlFor='password'>Password</FormLabel>
+                      <Link
+                        href='/forgot-password'
+                        className='ml-auto inline-block text-sm underline'
+                      >
+                        Forgot your password?
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <Input
+                        id='password'
+                        type='password'
+                        placeholder='Password'
+                        autoComplete='current-password'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
 
-          <div
-            className={cn(
-              'flex w-full items-center gap-2',
-              'flex-col justify-between'
-            )}
-          >
-            <Button
-              variant='outline'
-              className={cn('w-full gap-2')}
-              disabled={loading}
-              onClick={() => handleSocialSignIn('github')}
+            <Button type='submit' className='w-full' disabled={loading}>
+              {loading ? (
+                <Loader2 size={16} className='animate-spin' />
+              ) : (
+                'Login'
+              )}
+            </Button>
+
+            <div className='relative'>
+              <div className='absolute inset-0 flex items-center'>
+                <Separator className='w-full' />
+              </div>
+              <div className='relative flex justify-center text-xs uppercase'>
+                <span className='text-muted-foreground px-2'>
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <div
+              className={cn(
+                'flex w-full items-center gap-2',
+                'flex-col justify-between'
+              )}
             >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width='1em'
-                height='1em'
-                viewBox='0 0 24 24'
+              <Button
+                variant='outline'
+                className={cn('w-full gap-2')}
+                disabled={loading}
+                onClick={() => handleSocialSignIn('github')}
+                type='button'
               >
-                <path
-                  fill='currentColor'
-                  d='M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2'
-                ></path>
-              </svg>
-              Sign in with Github
-            </Button>
-          </div>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  width='1em'
+                  height='1em'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    fill='currentColor'
+                    d='M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2'
+                  ></path>
+                </svg>
+                Sign in with Github
+              </Button>
+            </div>
 
-          <div className='text-center text-sm'>
-            <span className='text-muted-foreground'>
-              Don&apos;t have an account?{' '}
-            </span>
-            <Button variant='link' asChild className='h-auto p-0 text-sm'>
-              <Link href='/sign-up'>Sign up</Link>
-            </Button>
-          </div>
-        </div>
+            <div className='text-center text-sm'>
+              <span className='text-muted-foreground'>
+                Don&apos;t have an account?{' '}
+              </span>
+              <Button variant='link' asChild className='h-auto p-0 text-sm'>
+                <Link href='/sign-up'>Sign up</Link>
+              </Button>
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

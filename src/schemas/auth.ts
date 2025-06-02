@@ -19,7 +19,8 @@ export const signUpSchema = object({
   name: getNameSchema(),
   email: getEmailSchema(),
   password: getPasswordSchema('password'),
-  confirmPassword: getPasswordSchema('confirmPassword')
+  confirmPassword: getPasswordSchema('confirmPassword'),
+  image: string().optional()
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword']

@@ -1,10 +1,12 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -15,52 +17,72 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { signUp } from '@/lib/auth-client';
+import { type SignUpSchema, signUpSchema } from '@/schemas/auth';
 
 export default function SignUp() {
   const router = useRouter();
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const form = useForm<SignUpSchema>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      image: ''
+    }
+  });
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      toast.success('Image uploaded');
+      try {
+        const base64Image = await convertImageToBase64(file);
+        form.setValue('image', base64Image);
+        setImagePreview(base64Image);
+        toast.success('Image uploaded');
+      } catch {
+        toast.error('Failed to upload image');
+      }
     }
   };
 
   const handleImageRemove = () => {
-    setImage(null);
+    form.setValue('image', '');
     setImagePreview(null);
     toast.success('Image removed');
   };
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (data: SignUpSchema) => {
     await signUp.email({
-      email,
-      password,
-      name: `${firstName} ${lastName}`,
-      image: image ? await convertImageToBase64(image) : '',
+      email: data.email,
+      password: data.password,
+      name: data.name,
+      image: data.image || '',
       callbackURL: '/dashboard',
       fetchOptions: {
-        onRequest: () => setLoading(true),
-        onResponse: () => setLoading(false),
+        onRequest: () => {
+          setLoading(true);
+          toast.loading('Creating account...');
+        },
+        onResponse: () => {
+          setLoading(false);
+          toast.success('Account created successfully');
+        },
         onError: ctx => {
           toast.error(ctx.error.message);
         },
@@ -83,114 +105,164 @@ export default function SignUp() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className='grid gap-4'>
-          <div className='grid grid-cols-2 gap-4'>
-            <div className='grid gap-2'>
-              <Label htmlFor='first-name'>First name</Label>
-              <Input
-                id='first-name'
-                placeholder='John'
-                required
-                onChange={e => setFirstName(e.target.value)}
-                value={firstName}
-              />
-            </div>
-            <div className='grid gap-2'>
-              <Label htmlFor='last-name'>Last name</Label>
-              <Input
-                id='last-name'
-                placeholder='Doe'
-                required
-                onChange={e => setLastName(e.target.value)}
-                value={lastName}
-              />
-            </div>
-          </div>
-          <div className='grid gap-2'>
-            <Label htmlFor='email'>Email</Label>
-            <Input
-              id='email'
-              type='email'
-              placeholder='email@example.com'
-              required
-              onChange={e => setEmail(e.target.value)}
-              value={email}
-            />
-          </div>
-          <div className='grid gap-2'>
-            <Label htmlFor='password'>Password</Label>
-            <Input
-              id='password'
-              type='password'
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              autoComplete='new-password'
-              placeholder='Password'
-            />
-          </div>
-          <div className='grid gap-2'>
-            <Label htmlFor='password'>Confirm Password</Label>
-            <Input
-              id='password_confirmation'
-              type='password'
-              value={passwordConfirmation}
-              onChange={e => setPasswordConfirmation(e.target.value)}
-              autoComplete='new-password'
-              placeholder='Confirm Password'
-            />
-          </div>
-          <div className='grid gap-2'>
-            <Label htmlFor='image'>Profile Image (optional)</Label>
-            <div className='flex items-end gap-4'>
-              {imagePreview && (
-                <div className='relative h-16 w-16 overflow-hidden rounded-sm'>
-                  <Image
-                    src={imagePreview}
-                    alt='Profile preview'
-                    layout='fill'
-                    objectFit='cover'
-                  />
-                </div>
-              )}
-              <div className='flex w-full items-center gap-2'>
-                <Input
-                  id='image'
-                  type='file'
-                  accept='image/*'
-                  onChange={handleImageChange}
-                  className='w-full'
-                />
-                {imagePreview && (
-                  <X className='cursor-pointer' onClick={handleImageRemove} />
-                )}
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          <Button
-            type='submit'
-            className='w-full'
-            disabled={loading}
-            onClick={handleSignUp}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSignUp)}
+            className='grid gap-4'
           >
-            {loading ? (
-              <Loader2 size={16} className='animate-spin' />
-            ) : (
-              'Create an account'
-            )}
-          </Button>
+            <FormField
+              control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='grid gap-2'>
+                    <FormLabel htmlFor='name'>Full Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        id='name'
+                        placeholder='John Doe'
+                        required
+                        {...field}
+                        autoComplete='name'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
 
-          <div className='text-center text-sm'>
-            <span className='text-muted-foreground'>
-              Already have an account?{' '}
-            </span>
-            <Button variant='link' asChild className='h-auto p-0 text-sm'>
-              <Link href='/sign-in'>Sign in</Link>
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='grid gap-2'>
+                    <FormLabel htmlFor='email'>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        id='email'
+                        type='email'
+                        placeholder='email@example.com'
+                        required
+                        {...field}
+                        autoComplete='email'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='grid gap-2'>
+                    <FormLabel htmlFor='password'>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        id='password'
+                        type='password'
+                        {...field}
+                        autoComplete='new-password'
+                        placeholder='Password'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='confirmPassword'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='grid gap-2'>
+                    <FormLabel htmlFor='confirmPassword'>
+                      Confirm Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        id='confirmPassword'
+                        type='password'
+                        {...field}
+                        autoComplete='new-password'
+                        placeholder='Confirm Password'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='image'
+              render={() => (
+                <FormItem>
+                  <div className='grid gap-2'>
+                    <FormLabel htmlFor='image'>
+                      Profile Image (optional)
+                    </FormLabel>
+                    <div className='flex items-end gap-4'>
+                      {imagePreview && (
+                        <div className='relative h-16 w-16 overflow-hidden rounded-sm'>
+                          <Image
+                            src={imagePreview}
+                            alt='Profile preview'
+                            layout='fill'
+                            objectFit='cover'
+                          />
+                        </div>
+                      )}
+                      <div className='flex w-full items-center gap-2'>
+                        <Input
+                          id='image'
+                          type='file'
+                          accept='image/*'
+                          onChange={handleImageChange}
+                          className='w-full'
+                        />
+                        {imagePreview && (
+                          <X
+                            className='cursor-pointer'
+                            onClick={handleImageRemove}
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+
+            <Separator />
+
+            <Button type='submit' className='w-full' disabled={loading}>
+              {loading ? (
+                <Loader2 size={16} className='animate-spin' />
+              ) : (
+                'Create an account'
+              )}
             </Button>
-          </div>
-        </div>
+
+            <div className='text-center text-sm'>
+              <span className='text-muted-foreground'>
+                Already have an account?{' '}
+              </span>
+              <Button variant='link' asChild className='h-auto p-0 text-sm'>
+                <Link href='/sign-in'>Sign in</Link>
+              </Button>
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );
