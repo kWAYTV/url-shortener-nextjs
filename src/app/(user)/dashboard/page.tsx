@@ -3,13 +3,15 @@
 import { redirect } from 'next/navigation';
 
 import { DashboardContent } from '@/components/core/user/dashboard/dashboard-content';
+import { DashboardError } from '@/components/core/user/dashboard/dashboard-error';
 import { useSession } from '@/lib/auth-client';
 
 export default function DashboardPage() {
-  const { data: session, isPending, error } = useSession();
+  const { data: session, error } = useSession();
 
-  if (isPending) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (error) {
+    return <DashboardError error={error} />;
+  }
 
   if (!session) return redirect('/sign-in');
 
