@@ -1,15 +1,15 @@
 'use client';
 
-import * as React from 'react';
+import { useCallback, useState } from 'react';
 
 type CopiedValue = string | null;
 
 type CopyFn = (text: string) => Promise<boolean>;
 
 export function useCopyToClipboard(): [CopiedValue, CopyFn] {
-  const [copiedText, setCopiedText] = React.useState<CopiedValue>(null);
+  const [copiedText, setCopiedText] = useState<CopiedValue>(null);
 
-  const copy: CopyFn = React.useCallback(async text => {
+  const copy: CopyFn = useCallback(async (text: string) => {
     if (!navigator?.clipboard) {
       console.warn('Clipboard not supported');
       return false;
@@ -19,7 +19,8 @@ export function useCopyToClipboard(): [CopiedValue, CopyFn] {
       await navigator.clipboard.writeText(text);
       setCopiedText(text);
       return true;
-    } catch {
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
       setCopiedText(null);
       return false;
     }

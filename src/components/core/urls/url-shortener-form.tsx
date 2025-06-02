@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Copy } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -22,15 +20,16 @@ import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { urlSchema, type UrlSchemaType } from '@/schemas/url.schema';
 import { shortenUrlAction } from '@/server/actions/urls/shorten-url.action';
 
-export function UrlShortenerForm() {
-  const router = useRouter();
-  const pathname = usePathname();
+interface ShortenedUrlResult {
+  shortUrl: string;
+  shortCode: string;
+}
 
-  const [shortUrl, setShortUrl] = useState<string | null>(null);
-  const [shortCode, setShortCode] = useState<string | null>(null);
+export function UrlShortenerForm() {
+  const [result, setResult] = useState<ShortenedUrlResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copied, copy] = useCopyToClipboard();
+  const [, copy] = useCopyToClipboard();
 
   const form = useForm<UrlSchemaType>({
     resolver: zodResolver(urlSchema),
@@ -43,25 +42,29 @@ export function UrlShortenerForm() {
     const success = await copy(text);
     if (success) {
       toast.success('Copied to clipboard');
+    } else {
+      toast.error('Failed to copy to clipboard');
     }
   };
 
   const onSubmit = async (data: UrlSchemaType) => {
     setIsLoading(true);
     setError(null);
-    setShortUrl(null);
-    setShortCode(null);
+    setResult(null);
 
     try {
       const response = await shortenUrlAction(data.url);
 
       if (response.success && response.data) {
-        setShortUrl(response.data.shortUrl);
-        setShortCode(response.data.shortCode);
+        setResult({
+          shortUrl: response.data.shortUrl,
+          shortCode: response.data.shortCode
+        });
       } else {
         setError(response.error || 'Failed to shorten URL');
       }
-    } catch {
+    } catch (err) {
+      console.error('URL shortening error:', err);
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
@@ -107,7 +110,7 @@ export function UrlShortenerForm() {
           </div>
         )}
 
-        {shortUrl && (
+        {result && (
           <Card>
             <CardContent className='p-4'>
               <p className='text-muted-foreground mb-2 text-sm font-medium'>
@@ -116,7 +119,7 @@ export function UrlShortenerForm() {
               <div className='flex items-center gap-2'>
                 <Input
                   type='text'
-                  value={shortUrl}
+                  value={result.shortUrl}
                   readOnly
                   className='font-medium'
                 />
@@ -124,7 +127,7 @@ export function UrlShortenerForm() {
                   type='button'
                   variant='outline'
                   className='flex-shrink-0'
-                  onClick={() => handleCopy(shortUrl)}
+                  onClick={() => handleCopy(result.shortUrl)}
                 >
                   <Copy className='mr-1 size-4' />
                   Copy

@@ -6,18 +6,26 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { type ApiResponse } from '@/types/api';
 
-export async function getUserUrlsAction(userId: string): Promise<
-  ApiResponse<
-    Array<{
-      id: number;
-      originalUrl: string;
-      shortCode: string;
-      createdAt: Date;
-      clicks: number;
-    }>
-  >
-> {
+interface UserUrl {
+  id: number;
+  originalUrl: string;
+  shortCode: string;
+  createdAt: Date;
+  clicks: number;
+}
+
+export async function getUserUrlsAction(
+  userId: string
+): Promise<ApiResponse<UserUrl[]>> {
   try {
+    // Validate userId parameter
+    if (!userId || typeof userId !== 'string') {
+      return {
+        success: false,
+        error: 'Invalid user ID'
+      };
+    }
+
     const session = await auth.api.getSession({
       headers: await headers()
     });
@@ -36,19 +44,21 @@ export async function getUserUrlsAction(userId: string): Promise<
 
     return {
       success: true,
-      data: userUrls.map(url => ({
-        id: url.id,
-        originalUrl: url.originalUrl,
-        shortCode: url.shortCode,
-        createdAt: url.createdAt,
-        clicks: url.clicks
-      }))
+      data: userUrls.map(
+        (url): UserUrl => ({
+          id: url.id,
+          originalUrl: url.originalUrl,
+          shortCode: url.shortCode,
+          createdAt: url.createdAt,
+          clicks: url.clicks
+        })
+      )
     };
   } catch (error) {
-    console.error('Error getting user URLs', error);
+    console.error('Error getting user URLs:', error);
     return {
       success: false,
-      error: 'An error occurred'
+      error: 'Failed to retrieve URLs'
     };
   }
 }
