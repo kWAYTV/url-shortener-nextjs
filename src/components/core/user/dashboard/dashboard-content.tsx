@@ -138,16 +138,6 @@ export function DashboardContent({ user }: DashboardContentProps) {
             )}
           </CardContent>
         </Card>
-
-        {/* Placeholder notice */}
-        <Card className='border-dashed'>
-          <CardContent className='pt-6'>
-            <div className='text-muted-foreground text-center'>
-              <p className='text-sm'>This dashboard is a placeholder.</p>
-              <p className='mt-1 text-xs'>More features coming soon...</p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

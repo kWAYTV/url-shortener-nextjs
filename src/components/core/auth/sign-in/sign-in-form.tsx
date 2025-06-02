@@ -50,7 +50,6 @@ export default function SignIn() {
         },
         onResponse: () => {
           setLoading(false);
-          toast.success('Signed in successfully');
         },
         onError: ctx => {
           toast.error(ctx.error.message);
@@ -72,7 +71,6 @@ export default function SignIn() {
         },
         onResponse: () => {
           setLoading(false);
-          toast.success('Signed in successfully');
         },
         onError: ctx => {
           toast.error(ctx.error.message);

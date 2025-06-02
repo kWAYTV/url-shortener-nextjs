@@ -81,7 +81,6 @@ export default function SignUp() {
         },
         onResponse: () => {
           setLoading(false);
-          toast.success('Account created successfully');
         },
         onError: ctx => {
           toast.error(ctx.error.message);
