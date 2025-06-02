@@ -7,8 +7,8 @@ import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { ensureHttps } from '@/lib/url-utils';
-import { urls } from '@/schemas/db';
-import { shortenUrlSchema } from '@/schemas/url';
+import { urls } from '@/schemas/db.schema';
+import { shortenUrlSchema } from '@/schemas/url.schema';
 import { type ApiResponse } from '@/types/api';
 
 export async function shortenUrlAction(url: string): Promise<

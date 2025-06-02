@@ -1,22 +1,14 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { z } from 'zod';
 
 import { auth } from '@/lib/auth';
 import { db, eq } from '@/lib/db';
-import { urls } from '@/schemas/db';
+import { urls } from '@/schemas/db.schema';
+import { updateUrlSchema } from '@/schemas/url.schema';
 import { type ApiResponse } from '@/types/api';
 
-const updateUrlSchema = z.object({
-  id: z.coerce.number(),
-  customCode: z
-    .string()
-    .max(255, 'Custom code must be less than 255 characters')
-    .regex(/^[a-zA-Z0-9_-]+$/, 'Custom code must be alphanumeric or hyphen')
-});
-
-export async function updateUrl(
+export async function updateUrlAction(
   formData: FormData
 ): Promise<ApiResponse<{ shortUrl: string }>> {
   try {

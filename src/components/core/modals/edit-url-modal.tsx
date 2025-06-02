@@ -21,8 +21,8 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { type EditUrlFormData, editUrlSchema } from '@/schemas/url';
-import { updateUrl } from '@/server/actions/urls/update-url.action';
+import { type EditUrlFormData, editUrlSchema } from '@/schemas/url.schema';
+import { updateUrlAction } from '@/server/actions/urls/update-url.action';
 
 interface EditUrlModalProps {
   isOpen: boolean;
@@ -50,9 +50,10 @@ export function EditUrlModal({
     }
   });
 
-  useEffect(() => {
-    form.reset({ customCode: currentShortCode });
-  }, [currentShortCode]);
+  useEffect(
+    () => form.reset({ customCode: currentShortCode }),
+    [currentShortCode, form]
+  );
 
   const onSubmit = async (data: EditUrlFormData) => {
     setIsLoading(true);
@@ -62,7 +63,7 @@ export function EditUrlModal({
       formData.append('id', urlId.toString());
       formData.append('customCode', data.customCode);
 
-      const response = await updateUrl(formData);
+      const response = await updateUrlAction(formData);
 
       if (response.success && response.data) {
         toast.success('URL updated successfully', {

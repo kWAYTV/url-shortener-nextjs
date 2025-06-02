@@ -4,10 +4,12 @@ import { headers } from 'next/headers';
 
 import { auth } from '@/lib/auth';
 import { db, eq } from '@/lib/db';
-import { urls } from '@/schemas/db';
+import { urls } from '@/schemas/db.schema';
 import { type ApiResponse } from '@/types/api';
 
-export async function deleteUrl(urlId: number): Promise<ApiResponse<null>> {
+export async function deleteUrlAction(
+  urlId: number
+): Promise<ApiResponse<null>> {
   try {
     const session = await auth.api.getSession({
       headers: await headers()

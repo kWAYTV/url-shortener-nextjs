@@ -6,7 +6,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { type ApiResponse } from '@/types/api';
 
-export async function getUserUrls(userId: string): Promise<
+export async function getUserUrlsAction(userId: string): Promise<
   ApiResponse<
     Array<{
       id: number;

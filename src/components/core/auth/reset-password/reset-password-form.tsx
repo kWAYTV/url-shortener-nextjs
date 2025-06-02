@@ -27,7 +27,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { resetPassword } from '@/lib/auth-client';
-import { type ResetPasswordSchema, resetPasswordSchema } from '@/schemas/auth';
+import {
+  type ResetPasswordSchema,
+  resetPasswordSchema
+} from '@/schemas/auth.schema';
 
 interface ResetPasswordFormProps {
   token: string;

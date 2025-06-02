@@ -23,6 +23,14 @@ export const deleteUrlSchema = z.object({
   urlId: z.number()
 });
 
+export const updateUrlSchema = z.object({
+  id: z.coerce.number(),
+  customCode: z
+    .string()
+    .max(255, 'Custom code must be less than 255 characters')
+    .regex(/^[a-zA-Z0-9_-]+$/, 'Custom code must be alphanumeric or hyphen')
+});
+
 export const editUrlSchema = z.object({
   customCode: z
     .string()
@@ -34,4 +42,5 @@ export const editUrlSchema = z.object({
 export type UrlSchemaType = z.infer<typeof urlSchema>;
 export type ShortenUrlSchemaType = z.infer<typeof shortenUrlSchema>;
 export type DeleteUrlSchemaType = z.infer<typeof deleteUrlSchema>;
+export type UpdateUrlSchemaType = z.infer<typeof updateUrlSchema>;
 export type EditUrlFormData = z.infer<typeof editUrlSchema>;

@@ -24,7 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { signIn } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import { type SignInSchema, signInSchema } from '@/schemas/auth';
+import { type SignInSchema, signInSchema } from '@/schemas/auth.schema';
 
 export default function SignInForm() {
   const router = useRouter();

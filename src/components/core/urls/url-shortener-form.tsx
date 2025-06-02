@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { urlSchema, type UrlSchemaType } from '@/schemas/url';
+import { urlSchema, type UrlSchemaType } from '@/schemas/url.schema';
 import { shortenUrlAction } from '@/server/actions/urls/shorten-url.action';
 
 export function UrlShortenerForm() {

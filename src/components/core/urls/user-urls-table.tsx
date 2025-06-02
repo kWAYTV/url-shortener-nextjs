@@ -6,11 +6,12 @@ import { Copy, Edit, ExternalLink, QrCode, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { EditUrlModal } from '@/components/core/modals/edit-url-modal';
 import { QRCodeModal } from '@/components/core/modals/qr-code-modal';
 import { Button } from '@/components/ui/button';
 import { env } from '@/env';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { deleteUrl } from '@/server/actions/urls/delete-url.action';
+import { deleteUrlAction } from '@/server/actions/urls/delete-url.action';
 import { type Url } from '@/types/url';
 
 interface UserUrlsTableProps {
@@ -34,7 +35,7 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
     setIsDeleting(id);
 
     try {
-      const response = await deleteUrl(id);
+      const response = await deleteUrlAction(id);
 
       if (response.success) {
         setLocalUrls(prev => prev.filter(url => url.id !== id));
@@ -64,6 +65,11 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
     setIsQrCodeModalOpen(false);
   };
 
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setUrlToEdit(null);
+  };
+
   const handleCopy = async (text: string) => {
     const success = await copy(text);
     if (success) {
@@ -85,6 +91,9 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
         url.id === urlToEdit.id ? { ...url, shortCode: newShortCode } : url
       )
     );
+
+    // close the modal
+    closeEditModal();
   };
 
   if (localUrls.length === 0) {
@@ -170,7 +179,7 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
                     <Button
                       variant='ghost'
                       size='icon'
-                      /* onClick={() => handleEdit(url.id, url.shortCode)} */
+                      onClick={() => handleEdit(url.id, url.shortCode)}
                       className='text-primary hover:text-primary size-8'
                     >
                       <Edit className='size-4' />
@@ -203,6 +212,16 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
         shortCode={qrCodeShortCode}
         onClose={closeQrModal}
       />
+
+      {urlToEdit && (
+        <EditUrlModal
+          isOpen={isEditModalOpen}
+          onOpenChange={closeEditModal}
+          urlId={urlToEdit.id}
+          currentShortCode={urlToEdit.shortCode}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </>
   );
 }

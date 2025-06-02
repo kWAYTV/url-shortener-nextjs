@@ -23,7 +23,7 @@ import { signIn } from '@/lib/auth-client';
 import {
   type SignInWithMagicLinkSchema,
   signInWithMagicLinkSchema
-} from '@/schemas/auth';
+} from '@/schemas/auth.schema';
 
 import EmailSent from './magic-link-email-sent';
 

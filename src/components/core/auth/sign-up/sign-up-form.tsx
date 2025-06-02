@@ -21,7 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { signUp } from '@/lib/auth-client';
-import { type SignUpSchema, signUpSchema } from '@/schemas/auth';
+import { type SignUpSchema, signUpSchema } from '@/schemas/auth.schema';
 
 export default function SignUpForm() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);

@@ -8,7 +8,7 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { type Session } from '@/lib/auth';
-import { getUserUrls } from '@/server/actions/urls/get-user-urls.action';
+import { getUserUrlsAction } from '@/server/actions/urls/get-user-urls.action';
 
 interface DashboardContentProps {
   user: Session['user'];
@@ -17,7 +17,7 @@ interface DashboardContentProps {
 export async function DashboardContent({ user }: DashboardContentProps) {
   if (!user) return null;
 
-  const userUrlsResponse = await getUserUrls(user.id);
+  const userUrlsResponse = await getUserUrlsAction(user.id);
   const userUrls =
     userUrlsResponse.success && userUrlsResponse.data
       ? userUrlsResponse.data

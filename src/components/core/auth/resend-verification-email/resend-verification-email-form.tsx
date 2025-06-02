@@ -23,7 +23,7 @@ import { sendVerificationEmail } from '@/lib/auth-client';
 import {
   type ResendVerificationEmailSchema,
   resendVerificationEmailSchema
-} from '@/schemas/auth';
+} from '@/schemas/auth.schema';
 
 export default function ResendVerificationEmailForm() {
   const [isPending, setIsPending] = useState(false);

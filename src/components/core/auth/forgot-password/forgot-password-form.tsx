@@ -29,7 +29,7 @@ import { forgetPassword } from '@/lib/auth-client';
 import {
   type ForgotPasswordSchema,
   forgotPasswordSchema
-} from '@/schemas/auth';
+} from '@/schemas/auth.schema';
 
 export default function ForgotPasswordForm() {
   const [isPending, setIsPending] = useState(false);
