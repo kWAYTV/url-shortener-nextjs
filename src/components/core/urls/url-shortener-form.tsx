@@ -3,17 +3,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { urlSchema, type UrlSchemaType } from '@/schemas/url';
+import { Button } from '@/components/ui/button';
 
 export function UrlShortenerForm() {
   const form = useForm<UrlSchemaType>({
@@ -28,25 +27,30 @@ export function UrlShortenerForm() {
   };
 
   return (
-    <div>
+    <div className='mx-auto w-full max-w-2xl'>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+          <div className='flex flex-col gap-2 sm:flex-row'>
             <FormField
               control={form.control}
               name='url'
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>URL</FormLabel>
+                <FormItem className='flex-1'>
                   <FormControl>
-                    <Input {...field} />
+                    <Input
+                      placeholder='Paste your url here'
+                      {...field}
+                      disabled={false}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type='submit'>Shorten</Button>
+            <Button type='submit' disabled={false}>
+              Shorten
+            </Button>
           </div>
         </form>
       </Form>
