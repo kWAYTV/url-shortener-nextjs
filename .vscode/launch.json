@@ -1,0 +1,10 @@
+{
+  "version": "0.2.0",
+  "configurations": [],
+  "compounds": [
+    {
+      "name": "Setup Development Environment",
+      "preLaunchTask": "Setup Terminals"
+    }
+  ]
+}

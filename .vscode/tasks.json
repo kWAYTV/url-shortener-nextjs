@@ -1,0 +1,86 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup Terminals",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Open Next Terminal",
+        "Open Shell Terminal",
+        "Open Studio Terminal"
+      ]
+    },
+    {
+      "label": "Open Next Terminal",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Next.js Terminal Ready"],
+      "options": {
+        "shell": {
+          "executable": "pwsh.exe"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "terminals"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Shell Terminal",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Shell Terminal Ready"],
+      "options": {
+        "shell": {
+          "executable": "pwsh.exe"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "terminals"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Studio Terminal",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Studio Terminal Ready"],
+      "options": {
+        "shell": {
+          "executable": "pwsh.exe"
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": false,
+        "group": "terminals"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "problemMatcher": []
+    }
+  ]
+}
