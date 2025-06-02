@@ -10,8 +10,8 @@ export default function Navbar() {
         short
       </Link>
       <div className='flex items-center gap-2'>
-        <AuthButtons />
         <ModeToggle />
+        <AuthButtons />
       </div>
     </nav>
   );

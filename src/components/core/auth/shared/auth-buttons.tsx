@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import SignoutButton from '@/components/core/auth/shared/sign-out-button';
+import { UserNav } from '@/components/core/auth/shared/user-nav';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@/lib/auth-client';
 
@@ -22,7 +22,7 @@ export default function AuthButtons() {
     </div>
   ) : (
     <div className='flex items-center gap-2'>
-      <SignoutButton />
+      <UserNav />
     </div>
   );
 }
