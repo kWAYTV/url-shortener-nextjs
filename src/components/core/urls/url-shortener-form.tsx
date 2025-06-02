@@ -90,7 +90,14 @@ export function UrlShortenerForm() {
           />
 
           <Button type='submit' disabled={isLoading}>
-            {isLoading ? 'Shortening...' : 'Shorten'}
+            {isLoading ? (
+              <>
+                <span className='mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                Shortening...
+              </>
+            ) : (
+              'Shorten'
+            )}
           </Button>
         </div>
 

@@ -6,6 +6,7 @@ import { Copy, Edit, ExternalLink, QrCode, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { QRCodeModal } from '@/components/core/modals/qr-code-modal';
 import { Button } from '@/components/ui/button';
 import { env } from '@/env';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
@@ -20,30 +21,47 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
   const [localUrls, setLocalUrls] = useState<Url[]>(urls);
   const [copied, copy] = useCopyToClipboard();
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [qrCodeShortCode, setQrCodeShortCode] = useState<string>('');
+  const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [urlToEdit, setUrlToEdit] = useState<{
+    id: number;
+    shortCode: string;
+  } | null>(null);
 
   const handleDelete = async (id: number) => {
     setIsDeleting(id);
 
     try {
       const response = await deleteUrl(id);
+
       if (response.success) {
         setLocalUrls(prev => prev.filter(url => url.id !== id));
-        toast.success('URL deleted successfully', {
-          description: 'The URL has been deleted successfully'
-        });
+        toast.success('URL deleted successfully');
       } else {
-        toast.error('Failed to delete URL', {
-          description: response.error || 'An error occurred'
-        });
+        toast.error(response.error || 'Failed to delete URL');
       }
-    } catch (error) {
-      console.error('Failed to delete URL', error);
-      toast.error('Failed to delete URL', {
-        description: 'An error occurred'
-      });
+    } catch {
+      toast.error('Failed to delete URL');
     } finally {
       setIsDeleting(null);
     }
+  };
+
+  const showQrCode = (shortCode: string) => {
+    const baseUrl =
+      env.NEXT_PUBLIC_APP_URL ||
+      (typeof window !== 'undefined' ? window.location.origin : '');
+    const shortUrl = `${baseUrl}/r/${shortCode}`;
+
+    setQrCodeUrl(shortUrl);
+    setQrCodeShortCode(shortCode);
+    setIsQrCodeModalOpen(true);
+  };
+
+  const closeQrModal = () => {
+    setIsQrCodeModalOpen(false);
   };
 
   const handleCopy = async (text: string) => {
@@ -52,6 +70,33 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
       toast.success('Copied to clipboard');
     }
   };
+
+  const handleEdit = (id: number, shortCode: string) => {
+    setUrlToEdit({ id, shortCode });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSuccess = (newShortCode: string) => {
+    if (!urlToEdit) return;
+
+    // update the short code in the local state
+    setLocalUrls(prev =>
+      prev.map(url =>
+        url.id === urlToEdit.id ? { ...url, shortCode: newShortCode } : url
+      )
+    );
+  };
+
+  if (localUrls.length === 0) {
+    return (
+      <div className='py-8 text-center'>
+        <p className='text-muted-foreground'>
+          You haven&apos;t created any short URLs yet. Click the button below to
+          create your first short URL.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -94,8 +139,8 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
                       {shortUrl}
                     </div>
                     <Button
-                      variant={'ghost'}
-                      size={'icon'}
+                      variant='ghost'
+                      size='icon'
                       onClick={() => handleCopy(shortUrl)}
                       className='ml-2 size-8'
                     >
@@ -113,25 +158,27 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
                 </td>
                 <td className='px-4 py-3 text-right'>
                   <div className='flex justify-end'>
-                    {/* <Button
-                      variant={'ghost'}
-                      size={'icon'}
+                    <Button
+                      variant='ghost'
+                      size='icon'
                       onClick={() => showQrCode(url.shortCode)}
                       className='text-primary hover:text-primary size-8'
                     >
                       <QrCode className='size-4' />
                     </Button>
+
                     <Button
-                      variant={'ghost'}
-                      size={'icon'}
-                      onClick={() => handleEdit(url.id, url.shortCode)}
+                      variant='ghost'
+                      size='icon'
+                      /* onClick={() => handleEdit(url.id, url.shortCode)} */
                       className='text-primary hover:text-primary size-8'
                     >
                       <Edit className='size-4' />
-                    </Button> */}
+                    </Button>
+
                     <Button
-                      variant={'ghost'}
-                      size={'icon'}
+                      variant='ghost'
+                      size='icon'
                       onClick={() => handleDelete(url.id)}
                       disabled={isDeleting === url.id}
                       className='text-destructive hover:text-destructive size-8'
@@ -149,6 +196,13 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
           })}
         </tbody>
       </table>
+
+      <QRCodeModal
+        isOpen={isQrCodeModalOpen}
+        url={qrCodeUrl}
+        shortCode={qrCodeShortCode}
+        onClose={closeQrModal}
+      />
     </>
   );
 }
