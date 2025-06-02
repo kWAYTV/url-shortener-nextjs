@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -24,6 +25,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { signIn } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
@@ -31,6 +33,7 @@ import { type SignInSchema, signInSchema } from '@/schemas/auth';
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const form = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
@@ -42,7 +45,12 @@ export default function SignIn() {
 
   const handleEmailSignIn = async (data: SignInSchema) => {
     await signIn.email(
-      { email: data.email, password: data.password },
+      {
+        email: data.email,
+        password: data.password,
+        rememberMe,
+        callbackURL: '/dashboard'
+      },
       {
         onRequest: () => {
           setLoading(true);
@@ -50,6 +58,10 @@ export default function SignIn() {
         },
         onResponse: () => {
           setLoading(false);
+        },
+        onSuccess: async () => {
+          toast.success('Signed in successfully');
+          setRememberMe(false);
         },
         onError: ctx => {
           toast.error(ctx.error.message);
@@ -153,6 +165,15 @@ export default function SignIn() {
                 'Login'
               )}
             </Button>
+
+            <div className='flex items-center gap-2'>
+              <Checkbox
+                id='remember'
+                checked={rememberMe}
+                onCheckedChange={() => setRememberMe(!rememberMe)}
+              />
+              <Label htmlFor='remember'>Remember me</Label>
+            </div>
 
             <div className='relative'>
               <div className='absolute inset-0 flex items-center'>

@@ -41,8 +41,7 @@ export function UserNav() {
           }
         }
       });
-    } catch (error) {
-      console.error('Error signing out', error);
+    } catch {
       toast.error('Error signing out');
     } finally {
       setPending(false);

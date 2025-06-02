@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -31,8 +30,6 @@ import { signUp } from '@/lib/auth-client';
 import { type SignUpSchema, signUpSchema } from '@/schemas/auth';
 
 export default function SignUp() {
-  const router = useRouter();
-
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -86,7 +83,6 @@ export default function SignUp() {
           toast.error(ctx.error.message);
         },
         onSuccess: async () => {
-          router.push('/dashboard');
           toast.success(
             'Account created. Please check your email for verification.'
           );

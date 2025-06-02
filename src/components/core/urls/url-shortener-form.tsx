@@ -61,8 +61,7 @@ export function UrlShortenerForm() {
       } else {
         setError(response.error || 'Failed to shorten URL');
       }
-    } catch (error) {
-      console.error('Failed to shorten URL:', error);
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);

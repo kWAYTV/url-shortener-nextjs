@@ -74,7 +74,10 @@ export function DashboardContent({ user }: DashboardContentProps) {
                 <p className='text-muted-foreground text-sm font-medium'>
                   Role
                 </p>
-                <Badge variant='secondary' className='mt-1'>
+                <Badge
+                  variant={user?.role === 'admin' ? 'destructive' : 'secondary'}
+                  className='mt-1'
+                >
                   {user?.role || 'Unknown'}
                 </Badge>
               </div>

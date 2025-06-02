@@ -69,9 +69,7 @@ export async function shortenUrl(url: string): Promise<
         shortCode
       }
     };
-  } catch (error) {
-    console.error('Failed to shorten URL:', error);
-
+  } catch {
     return {
       success: false,
       error: 'Internal server error. Please try again.'
