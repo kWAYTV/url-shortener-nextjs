@@ -64,7 +64,10 @@ export function UrlShortenerForm() {
     setResult(null);
 
     try {
-      const response = await shortenUrlAction(data.url);
+      const response = await shortenUrlAction({
+        url: data.url,
+        customCode: data.customCode || undefined
+      });
 
       if (response.success && response.data) {
         setResult({

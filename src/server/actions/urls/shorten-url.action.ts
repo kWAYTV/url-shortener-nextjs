@@ -7,7 +7,7 @@ import { getSession } from '@/lib/auth-utils';
 import { db } from '@/lib/db';
 import { ensureHttps } from '@/lib/url-utils';
 import { urls } from '@/schemas/db.schema';
-import { shortenUrlSchema } from '@/schemas/url.schema';
+import { urlSchema } from '@/schemas/url.schema';
 import { type ApiResponse } from '@/types/api';
 
 interface ShortenUrlResult {
@@ -15,18 +15,15 @@ interface ShortenUrlResult {
   shortCode: string;
 }
 
+interface ShortenUrlParams {
+  url: string;
+  customCode?: string;
+}
+
 export async function shortenUrlAction(
-  url: string
+  params: ShortenUrlParams
 ): Promise<ApiResponse<ShortenUrlResult>> {
   try {
-    // Input validation
-    if (!url || typeof url !== 'string') {
-      return {
-        success: false,
-        error: 'URL is required'
-      };
-    }
-
     const session = await getSession();
 
     if (!session?.user?.id) {
@@ -36,7 +33,7 @@ export async function shortenUrlAction(
       };
     }
 
-    const validatedFields = shortenUrlSchema.safeParse({ url: url.trim() });
+    const validatedFields = urlSchema.safeParse(params);
 
     if (!validatedFields.success) {
       return {
@@ -45,7 +42,8 @@ export async function shortenUrlAction(
       };
     }
 
-    const originalUrl = ensureHttps(validatedFields.data.url);
+    const { url, customCode } = validatedFields.data;
+    const originalUrl = ensureHttps(url);
 
     // Check for existing URL for this user to prevent duplicates
     const existingUrlForUser = await db.query.urls.findFirst({
@@ -65,8 +63,8 @@ export async function shortenUrlAction(
       };
     }
 
-    // Generate unique short code with collision handling
-    let shortCode = nanoid(6);
+    // Use custom code if provided, otherwise generate a random one
+    let shortCode = customCode || nanoid(6);
     let attempts = 0;
     const maxAttempts = 10;
 
@@ -78,6 +76,15 @@ export async function shortenUrlAction(
 
       if (!existingUrl) break;
 
+      // If custom code is already taken, return error
+      if (customCode) {
+        return {
+          success: false,
+          error: 'This custom code is already in use'
+        };
+      }
+
+      // Generate new random code
       shortCode = nanoid(6);
       attempts++;
     }
