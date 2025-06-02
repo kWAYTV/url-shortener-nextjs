@@ -71,8 +71,7 @@ export function EditUrlModal({
       } else {
         toast.error(response.error || 'Failed to update URL');
       }
-    } catch (error) {
-      console.error('Error updating URL:', error);
+    } catch {
       toast.error('Failed to update URL');
     } finally {
       setIsLoading(false);

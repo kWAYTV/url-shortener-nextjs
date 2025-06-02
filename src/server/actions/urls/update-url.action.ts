@@ -93,8 +93,7 @@ export async function updateUrlAction(
         shortCode: customCode
       }
     };
-  } catch (error) {
-    console.error('Error updating URL:', error);
+  } catch {
     return {
       success: false,
       error: 'Failed to update URL. Please try again.'

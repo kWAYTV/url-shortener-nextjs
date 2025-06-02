@@ -47,8 +47,7 @@ export async function getUserUrlsAction(
     }));
 
     return createSuccessResponse(mappedUrls);
-  } catch (error) {
-    console.error('Error getting user URLs:', error);
+  } catch {
     return createServerErrorResponse('Failed to retrieve URLs');
   }
 }

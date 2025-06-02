@@ -71,8 +71,7 @@ export async function handleAsyncAction<T>(
   try {
     const result = await action();
     return createSuccessResponse(result);
-  } catch (error) {
-    console.error('Action error:', error);
+  } catch {
     return createServerErrorResponse(
       errorMessage || 'An unexpected error occurred'
     );

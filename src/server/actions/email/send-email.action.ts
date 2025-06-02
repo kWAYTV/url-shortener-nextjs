@@ -55,7 +55,6 @@ export async function sendEmailAction({
     });
 
     if (error) {
-      console.error('Resend error:', error);
       return {
         success: false,
         error: error.message || 'Failed to send email'
@@ -76,11 +75,10 @@ export async function sendEmailAction({
         message: 'Email sent successfully'
       }
     };
-  } catch (error) {
-    console.error('Error sending email:', error);
+  } catch {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email'
+      error: 'Failed to send email'
     };
   }
 }

@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Copy } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -16,16 +17,25 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { env } from '@/env';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { useSession } from '@/lib/auth-client';
 import { urlSchema, type UrlSchemaType } from '@/schemas/url.schema';
 import { shortenUrlAction } from '@/server/actions/urls/shorten-url.action';
 
 interface ShortenedUrlResult {
   shortUrl: string;
   shortCode: string;
+  customCode?: string;
 }
 
 export function UrlShortenerForm() {
+  const { data: session } = useSession();
+
+  const user = session?.user;
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [result, setResult] = useState<ShortenedUrlResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +44,8 @@ export function UrlShortenerForm() {
   const form = useForm<UrlSchemaType>({
     resolver: zodResolver(urlSchema),
     defaultValues: {
-      url: ''
+      url: '',
+      customCode: ''
     }
   });
 
@@ -58,13 +69,17 @@ export function UrlShortenerForm() {
       if (response.success && response.data) {
         setResult({
           shortUrl: response.data.shortUrl,
-          shortCode: response.data.shortCode
+          shortCode: response.data.shortCode,
+          customCode: data.customCode || undefined
         });
       } else {
         setError(response.error || 'Failed to shorten URL');
       }
-    } catch (err) {
-      console.error('URL shortening error:', err);
+
+      if (user && pathname.includes('/dashboard')) {
+        router.refresh();
+      }
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
@@ -103,6 +118,32 @@ export function UrlShortenerForm() {
             )}
           </Button>
         </div>
+
+        <FormField
+          control={form.control}
+          name='customCode'
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className='flex items-center'>
+                  <span className='text-muted-foreground mr-2 text-sm'>
+                    {env.NEXT_PUBLIC_APP_URL || window.location.origin}
+                    /r/
+                  </span>
+                  <Input
+                    placeholder='Custom code (optional)'
+                    {...field}
+                    value={field.value || ''}
+                    onChange={e => field.onChange(e.target.value || '')}
+                    disabled={isLoading}
+                    className='flex-1'
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         {error && (
           <div className='bg-destructive/10 text-destructive rounded-md p-3 text-sm'>

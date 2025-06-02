@@ -83,7 +83,6 @@ export async function shortenUrlAction(
     }
 
     if (attempts >= maxAttempts) {
-      console.error('Failed to generate unique short code after max attempts');
       return {
         success: false,
         error: 'Unable to generate unique short code. Please try again.'
@@ -112,8 +111,7 @@ export async function shortenUrlAction(
         shortCode
       }
     };
-  } catch (error) {
-    console.error('Error shortening URL:', error);
+  } catch {
     return {
       success: false,
       error: 'Failed to shorten URL. Please try again.'

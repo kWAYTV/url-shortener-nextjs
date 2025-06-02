@@ -57,8 +57,7 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
       } else {
         toast.error(response.error || 'Failed to delete URL');
       }
-    } catch (err) {
-      console.error('Delete URL error:', err);
+    } catch {
       toast.error('Failed to delete URL');
     } finally {
       setIsDeleting(null);

@@ -51,8 +51,7 @@ export async function deleteUrlAction(
       success: true,
       data: null
     };
-  } catch (error) {
-    console.error('Error deleting URL:', error);
+  } catch {
     return {
       success: false,
       error: 'Failed to delete URL. Please try again.'
