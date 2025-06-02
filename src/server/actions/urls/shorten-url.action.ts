@@ -2,7 +2,9 @@
 
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
 
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { ensureHttps } from '@/lib/url-utils';
 import { urls } from '@/schemas/db';
@@ -16,6 +18,19 @@ export async function shortenUrlAction(url: string): Promise<
   }>
 > {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers()
+    });
+
+    if (!session) {
+      return {
+        success: false,
+        error: 'Unauthorized'
+      };
+    }
+
+    const userId = session.user.id;
+
     const validatedFields = shortenUrlSchema.safeParse({ url });
 
     if (!validatedFields.success) {
@@ -54,7 +69,8 @@ export async function shortenUrlAction(url: string): Promise<
       originalUrl,
       shortCode,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      userId: userId || null
     });
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

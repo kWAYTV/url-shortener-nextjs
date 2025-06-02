@@ -13,7 +13,7 @@ interface DashboardErrorProps {
 export function DashboardError({ error }: DashboardErrorProps) {
   return (
     <div className='container mx-auto flex min-h-screen flex-col items-center justify-center px-6'>
-      <div className='w-full max-w-md space-y-6'>
+      <div className='w-full max-w-6xl space-y-6'>
         <Card>
           <CardContent className='space-y-6 p-8 text-center'>
             {/* Error Icon */}

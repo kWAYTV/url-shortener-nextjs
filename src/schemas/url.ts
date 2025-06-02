@@ -19,4 +19,10 @@ export const shortenUrlSchema = z.object({
   })
 });
 
+export const deleteUrlSchema = z.object({
+  urlId: z.number()
+});
+
 export type UrlSchemaType = z.infer<typeof urlSchema>;
+export type ShortenUrlSchemaType = z.infer<typeof shortenUrlSchema>;
+export type DeleteUrlSchemaType = z.infer<typeof deleteUrlSchema>;

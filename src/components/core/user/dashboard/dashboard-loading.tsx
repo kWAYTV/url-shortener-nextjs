@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function DashboardLoading() {
   return (
     <div className='container mx-auto min-h-screen px-6 pt-20 pb-8'>
-      <div className='mx-auto max-w-2xl space-y-6'>
+      <div className='mx-auto max-w-6xl space-y-6'>
         {/* Welcome Section Skeleton */}
         <Card>
           <CardContent className='pt-6'>
