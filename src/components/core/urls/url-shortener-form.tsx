@@ -70,66 +70,64 @@ export function UrlShortenerForm() {
   };
 
   return (
-    <div className='mx-auto w-full max-w-2xl'>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-          <div className='flex flex-col gap-2 sm:flex-row'>
-            <FormField
-              control={form.control}
-              name='url'
-              render={({ field }) => (
-                <FormItem className='flex-1'>
-                  <FormControl>
-                    <Input
-                      placeholder='Paste your url here'
-                      {...field}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type='submit' disabled={isLoading}>
-              {isLoading ? 'Shortening...' : 'Shorten'}
-            </Button>
-          </div>
-
-          {error && (
-            <div className='bg-destructive/10 text-destructive rounded-md p-3 text-sm'>
-              {error}
-            </div>
-          )}
-
-          {shortUrl && (
-            <Card>
-              <CardContent className='p-4'>
-                <p className='text-muted-foreground mb-2 text-sm font-medium'>
-                  Your shortened URL:
-                </p>
-                <div className='flex items-center gap-2'>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+        <div className='flex flex-col gap-2 sm:flex-row'>
+          <FormField
+            control={form.control}
+            name='url'
+            render={({ field }) => (
+              <FormItem className='flex-1'>
+                <FormControl>
                   <Input
-                    type='text'
-                    value={shortUrl}
-                    readOnly
-                    className='font-medium'
+                    placeholder='Paste your url here'
+                    {...field}
+                    disabled={isLoading}
                   />
-                  <Button
-                    type='button'
-                    variant='outline'
-                    className='flex-shrink-0'
-                    onClick={() => handleCopy(shortUrl)}
-                  >
-                    <Copy className='mr-1 size-4' />
-                    Copy
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </form>
-      </Form>
-    </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type='submit' disabled={isLoading}>
+            {isLoading ? 'Shortening...' : 'Shorten'}
+          </Button>
+        </div>
+
+        {error && (
+          <div className='bg-destructive/10 text-destructive rounded-md p-3 text-sm'>
+            {error}
+          </div>
+        )}
+
+        {shortUrl && (
+          <Card>
+            <CardContent className='p-4'>
+              <p className='text-muted-foreground mb-2 text-sm font-medium'>
+                Your shortened URL:
+              </p>
+              <div className='flex items-center gap-2'>
+                <Input
+                  type='text'
+                  value={shortUrl}
+                  readOnly
+                  className='font-medium'
+                />
+                <Button
+                  type='button'
+                  variant='outline'
+                  className='flex-shrink-0'
+                  onClick={() => handleCopy(shortUrl)}
+                >
+                  <Copy className='mr-1 size-4' />
+                  Copy
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </form>
+    </Form>
   );
 }

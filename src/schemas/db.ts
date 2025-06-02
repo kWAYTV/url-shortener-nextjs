@@ -1,12 +1,16 @@
+import { relations } from 'drizzle-orm';
 import {
   boolean,
   integer,
+  pgEnum,
   pgTable,
   serial,
   text,
   timestamp,
   varchar
 } from 'drizzle-orm/pg-core';
+
+export const userRoles = pgEnum('user_roles', ['admin', 'user']);
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -21,7 +25,11 @@ export const user = pgTable('user', {
     .notNull(),
   updatedAt: timestamp('updated_at')
     .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull()
+    .notNull(),
+  role: userRoles('role').default('user').notNull(),
+  banned: boolean('banned'),
+  banReason: text('ban_reason'),
+  banExpires: timestamp('ban_expires')
 });
 
 export const session = pgTable('session', {
@@ -34,7 +42,8 @@ export const session = pgTable('session', {
   userAgent: text('user_agent'),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' })
+    .references(() => user.id, { onDelete: 'cascade' }),
+  impersonatedBy: text('impersonated_by')
 });
 
 export const account = pgTable('account', {
@@ -74,5 +83,33 @@ export const urls = pgTable('urls', {
   shortCode: varchar('short_code', { length: 10 }).notNull().unique(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  clicks: integer('clicks').default(0).notNull()
+  clicks: integer('clicks').default(0).notNull(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'set null' })
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+  urls: many(urls),
+  sessions: many(session),
+  accounts: many(account)
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id]
+  })
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id]
+  })
+}));
+
+export const urlsRelations = relations(urls, ({ one }) => ({
+  user: one(user, {
+    fields: [urls.userId],
+    references: [user.id]
+  })
+}));
