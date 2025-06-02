@@ -4,12 +4,13 @@ import Link from 'next/link';
 
 import { UserNav } from '@/components/core/auth/shared/user-nav';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useSession } from '@/lib/auth-client';
 
 export default function AuthButtons() {
   const { data: session, isPending } = useSession();
 
-  if (isPending) return <div>Loading...</div>;
+  if (isPending) return <Skeleton className='h-8 w-8 rounded-full' />;
 
   return !session ? (
     <div className='flex justify-center gap-2'>
