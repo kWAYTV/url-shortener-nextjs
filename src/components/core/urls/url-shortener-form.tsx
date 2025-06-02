@@ -1,3 +1,9 @@
+import { Button } from '@/components/ui/button';
+
 export function UrlShortenerForm() {
-  return <div>UrlShortenerForm</div>;
+  return (
+    <div>
+      <Button>Click me</Button>
+    </div>
+  );
 }

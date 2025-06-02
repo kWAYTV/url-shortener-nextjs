@@ -3,7 +3,7 @@ name: Changelog-Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 permissions:
   contents: write
