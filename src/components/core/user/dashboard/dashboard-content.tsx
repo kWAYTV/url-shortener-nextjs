@@ -1,9 +1,15 @@
 import { AlertTriangle } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { type Session } from '@/lib/auth';
+import { UrlShortenerForm } from '@/components/core/urls/url-shortener-form';
 
 interface DashboardContentProps {
   user: Session['user'];
@@ -41,9 +47,8 @@ export function DashboardContent({ user }: DashboardContentProps) {
   return (
     <div className='container mx-auto min-h-screen px-6 pt-20 pb-8'>
       <div className='mx-auto max-w-2xl space-y-6'>
-        {/* Welcome Section */}
         <Card>
-          <CardContent className='pt-6'>
+          <CardContent>
             <div className='flex items-center space-x-4'>
               <Avatar className='h-16 w-16'>
                 <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
@@ -63,82 +68,15 @@ export function DashboardContent({ user }: DashboardContentProps) {
           </CardContent>
         </Card>
 
-        {/* Account Info */}
         <Card>
           <CardHeader>
-            <CardTitle>Account Information</CardTitle>
+            <CardTitle>Create New Url</CardTitle>
+            <CardDescription>
+              Create a new short url for your long url.
+            </CardDescription>
           </CardHeader>
-          <CardContent className='space-y-4'>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-              <div>
-                <p className='text-muted-foreground text-sm font-medium'>
-                  Role
-                </p>
-                <Badge
-                  variant={user?.role === 'admin' ? 'destructive' : 'secondary'}
-                  className='mt-1'
-                >
-                  {user?.role || 'Unknown'}
-                </Badge>
-              </div>
-              <div>
-                <p className='text-muted-foreground text-sm font-medium'>
-                  Status
-                </p>
-                <Badge
-                  variant={user?.banned ? 'destructive' : 'default'}
-                  className='mt-1'
-                >
-                  {user?.banned ? 'Banned' : 'Active'}
-                </Badge>
-              </div>
-              <div>
-                <p className='text-muted-foreground text-sm font-medium'>
-                  Member Since
-                </p>
-                <p className='text-sm'>
-                  {user?.createdAt
-                    ? user.createdAt.toLocaleDateString()
-                    : 'Unknown'}
-                </p>
-              </div>
-              <div>
-                <p className='text-muted-foreground text-sm font-medium'>
-                  Last Updated
-                </p>
-                <p className='text-sm'>
-                  {user?.updatedAt
-                    ? user.updatedAt.toLocaleDateString()
-                    : 'Unknown'}
-                </p>
-              </div>
-            </div>
-
-            {user?.banned && user?.banReason && (
-              <div className='border-destructive/20 bg-destructive/10 rounded-lg border p-4'>
-                <p className='text-destructive text-sm font-medium'>
-                  Ban Reason
-                </p>
-                <p className='text-destructive/80 text-sm'>{user.banReason}</p>
-                {user?.banExpires && (
-                  <p className='text-destructive/60 mt-1 text-xs'>
-                    Expires: {user.banExpires.toLocaleString()}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {user?.banned && !user?.banReason && (
-              <div className='border-destructive/20 bg-destructive/10 rounded-lg border p-4'>
-                <p className='text-destructive text-sm font-medium'>
-                  Account Banned
-                </p>
-                <p className='text-destructive/80 text-sm'>
-                  Your account has been suspended. Please contact support for
-                  more information.
-                </p>
-              </div>
-            )}
+          <CardContent>
+            <UrlShortenerForm />
           </CardContent>
         </Card>
       </div>
