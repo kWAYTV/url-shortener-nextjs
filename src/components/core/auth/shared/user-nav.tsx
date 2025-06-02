@@ -37,7 +37,6 @@ export function UserNav() {
         fetchOptions: {
           onSuccess: () => {
             router.push('/sign-in');
-            router.refresh();
             toast.success('Signed out successfully');
           }
         }

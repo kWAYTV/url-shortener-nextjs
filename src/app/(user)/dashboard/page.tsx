@@ -1,12 +1,19 @@
+'use client';
+
 import { redirect } from 'next/navigation';
 
 import { DashboardContent } from '@/components/core/user/dashboard/dashboard-content';
-import { getUser } from '@/lib/auth-utils';
+import { useSession } from '@/lib/auth-client';
 
-export default async function DashboardPage() {
-  const user = await getUser();
+export default function DashboardPage() {
+  const { data: session, isPending, error } = useSession();
 
-  if (!user) return redirect('/sign-in');
+  if (isPending) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  if (!session) return redirect('/sign-in');
+
+  const user = session?.user;
 
   return <DashboardContent user={user} />;
 }
