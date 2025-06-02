@@ -38,19 +38,27 @@ export default function ResendVerificationEmailForm() {
   const onSubmit = async (data: ResendVerificationEmailSchema) => {
     setIsPending(true);
 
-    const { error } = await sendVerificationEmail({
+    await sendVerificationEmail({
       email: data.email,
-      callbackURL: '/email-verified'
+      callbackURL: '/email-verified',
+      fetchOptions: {
+        onRequest: () => {
+          setIsPending(true);
+          toast('Sending verification link...');
+        },
+        onSuccess: () => {
+          toast.success(
+            'If an account exists with this email, you will receive a verification link.'
+          );
+        },
+        onResponse: () => {
+          setIsPending(false);
+        },
+        onError: ctx => {
+          toast.error(ctx.error.message);
+        }
+      }
     });
-
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success(
-        'If an account exists with this email, you will receive a verification link.'
-      );
-    }
-    setIsPending(false);
   };
 
   return (
