@@ -9,7 +9,9 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string(),
     GITHUB_CLIENT_ID: z.string(),
-    GITHUB_CLIENT_SECRET: z.string()
+    GITHUB_CLIENT_SECRET: z.string(),
+    RESEND_API_KEY: z.string(),
+    RESEND_FROM_EMAIL: z.string()
   },
   /*
    * Environment variables available on the client (and server).
@@ -26,6 +28,8 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL
   }
 });

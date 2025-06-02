@@ -74,7 +74,7 @@ export default function SignUp() {
       fetchOptions: {
         onRequest: () => {
           setLoading(true);
-          toast.loading('Creating account...');
+          toast('Creating account...');
         },
         onResponse: () => {
           setLoading(false);

@@ -53,7 +53,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
               </Avatar>
               <div>
                 <h1 className='text-2xl font-bold'>
-                  Welcome back, {user?.name || 'User'}!
+                  Welcome, {user?.name || 'User'}!
                 </h1>
                 <p className='text-muted-foreground'>
                   {user?.email || 'No email available'}

@@ -6,6 +6,7 @@ import { admin } from 'better-auth/plugins';
 import { env } from '@/env';
 import { db } from '@/lib/db';
 import { hashPassword, verifyPassword } from '@/lib/hash';
+import { sendEmailAction } from '@/server/actions/email/send-email.action';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -21,6 +22,31 @@ export const auth = betterAuth({
     password: {
       hash: hashPassword,
       verify: verifyPassword
+    },
+
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmailAction({
+        to: user.email,
+        subject: 'Reset your password',
+        html: `<p>Please click the link below to reset your password.</p><a href="${String(url)}">Reset password</a>`
+      });
+    }
+  },
+
+  emailVerification: {
+    sendOnSignUp: true,
+    expiresIn: 60 * 60,
+    autoSignInAfterVerification: true,
+
+    sendVerificationEmail: async ({ user, url }) => {
+      const link = new URL(url);
+      link.searchParams.set('callbackURL', '/email-verified');
+
+      await sendEmailAction({
+        to: user.email,
+        subject: 'Verify your email address',
+        html: `<p>Please verify your email address to complete the registration process.</p><a href="${String(link)}">Verify email</a>`
+      });
     }
   },
 
@@ -35,7 +61,7 @@ export const auth = betterAuth({
     expiresIn: 30 * 24 * 60 * 60,
 
     cookieCache: {
-      enabled: true,
+      enabled: false,
       maxAge: 5 * 60
     }
   },

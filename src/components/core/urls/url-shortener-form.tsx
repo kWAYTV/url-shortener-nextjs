@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { urlSchema, type UrlSchemaType } from '@/schemas/url';
-import { shortenUrl } from '@/server/actions/urls/shorten-url';
+import { shortenUrlAction } from '@/server/actions/urls/shorten-url.action';
 
 export function UrlShortenerForm() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export function UrlShortenerForm() {
     setShortCode(null);
 
     try {
-      const response = await shortenUrl(data.url);
+      const response = await shortenUrlAction(data.url);
 
       if (response.success && response.data) {
         setShortUrl(response.data.shortUrl);

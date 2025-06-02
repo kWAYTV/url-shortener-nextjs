@@ -54,7 +54,7 @@ export default function SignIn() {
       {
         onRequest: () => {
           setLoading(true);
-          toast.loading('Signing in...');
+          toast('Signing in...');
         },
         onResponse: () => {
           setLoading(false);
@@ -79,7 +79,7 @@ export default function SignIn() {
       {
         onRequest: () => {
           setLoading(true);
-          toast.loading('Signing in...');
+          toast('Signing in...');
         },
         onResponse: () => {
           setLoading(false);

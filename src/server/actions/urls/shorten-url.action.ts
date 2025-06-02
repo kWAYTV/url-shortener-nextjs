@@ -9,7 +9,7 @@ import { urls } from '@/schemas/db';
 import { shortenUrlSchema } from '@/schemas/url';
 import { type ApiResponse } from '@/types/api';
 
-export async function shortenUrl(url: string): Promise<
+export async function shortenUrlAction(url: string): Promise<
   ApiResponse<{
     shortUrl: string;
     shortCode: string;
