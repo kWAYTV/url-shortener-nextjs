@@ -1,6 +1,16 @@
+import { redirect } from 'next/navigation';
+
 import ResetPasswordForm from '@/components/core/auth/reset-password/reset-password-form';
 
-export default function ResetPasswordPage() {
+interface PageProps {
+  searchParams: Promise<{ token: string }>;
+}
+
+export default async function ResetPasswordPage({ searchParams }: PageProps) {
+  const token = (await searchParams).token;
+
+  if (!token) redirect('/sign-in');
+
   return (
     <div className='container mx-auto flex min-h-screen flex-col items-center justify-center px-6'>
       <div className='w-full max-w-sm space-y-6'>
@@ -13,7 +23,7 @@ export default function ResetPasswordPage() {
           </p>
         </div>
 
-        <ResetPasswordForm />
+        <ResetPasswordForm token={token} />
       </div>
     </div>
   );

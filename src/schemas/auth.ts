@@ -40,6 +40,7 @@ export const forgotPasswordSchema = object({
 });
 
 export const resetPasswordSchema = object({
+  token: string({ required_error: 'Token is required' }),
   password: getPasswordSchema('password'),
   confirmPassword: getPasswordSchema('confirmPassword')
 }).refine(data => data.password === data.confirmPassword, {
