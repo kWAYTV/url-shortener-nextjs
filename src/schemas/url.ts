@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { isValidUrl } from '@/lib/utils';
+
 export const urlSchema = z.object({
   url: z.string().min(1, 'URL is required'),
   customCode: z
@@ -9,6 +11,12 @@ export const urlSchema = z.object({
     .optional()
     .or(z.literal(''))
     .transform(val => (val === '' ? undefined : val))
+});
+
+export const shortenUrlSchema = z.object({
+  url: z.string().refine(isValidUrl, {
+    message: 'Please enter a valid URL'
+  })
 });
 
 export type UrlSchemaType = z.infer<typeof urlSchema>;
