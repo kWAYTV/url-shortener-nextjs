@@ -1,9 +1,18 @@
-export default async function Home() {
+import { UrlShortenerForm } from "@/components/core/urls/url-shortener-form";
+
+export default function Home() {
   return (
-    <div>
-      <div>
-        <h1>Shorten your links</h1>
-        <p>Paste your long link and get a short link</p>
+    <div className="flex flex-1 flex-col items-center justify-center p-6 md:p-24">
+      <div className="w-full max-w-3xl mx-auto text-center">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+          Shorten Your Links
+        </h1>
+        <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+          Paste your long URL and get a shortened one. It's free and easy to
+          use.
+        </p>
+
+        <UrlShortenerForm />
       </div>
     </div>
   );
