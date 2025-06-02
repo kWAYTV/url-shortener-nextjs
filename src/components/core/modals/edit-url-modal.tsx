@@ -59,28 +59,21 @@ export function EditUrlModal({
     setIsLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('id', urlId.toString());
-      formData.append('customCode', data.customCode);
-
-      const response = await updateUrlAction(formData);
+      const response = await updateUrlAction({
+        id: urlId,
+        customCode: data.customCode
+      });
 
       if (response.success && response.data) {
-        toast.success('URL updated successfully', {
-          description: 'The URL has been updated successfully'
-        });
+        toast.success('URL updated successfully');
         onSuccess(data.customCode);
         onOpenChange(false);
       } else {
-        toast.error('Failed to update URL', {
-          description: response.error || 'An error occurred'
-        });
+        toast.error(response.error || 'Failed to update URL');
       }
     } catch (error) {
-      console.error('Failed to update URL', error);
-      toast.error('Failed to update URL', {
-        description: 'An error occurred'
-      });
+      console.error('Error updating URL:', error);
+      toast.error('Failed to update URL');
     } finally {
       setIsLoading(false);
     }

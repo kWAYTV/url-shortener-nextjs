@@ -1,9 +1,13 @@
 'use server';
 
-import { headers } from 'next/headers';
-
-import { auth } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { db } from '@/lib/db';
+import {
+  createServerErrorResponse,
+  createSuccessResponse,
+  createUnauthorizedResponse,
+  createValidationErrorResponse
+} from '@/server/actions/utils';
 import { type ApiResponse } from '@/types/api';
 
 interface UserUrl {
@@ -18,23 +22,15 @@ export async function getUserUrlsAction(
   userId: string
 ): Promise<ApiResponse<UserUrl[]>> {
   try {
-    // Validate userId parameter
+    // Input validation
     if (!userId || typeof userId !== 'string') {
-      return {
-        success: false,
-        error: 'Invalid user ID'
-      };
+      return createValidationErrorResponse('Invalid user ID');
     }
 
-    const session = await auth.api.getSession({
-      headers: await headers()
-    });
+    const session = await getSession();
 
     if (!session?.user || session.user.id !== userId) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
+      return createUnauthorizedResponse();
     }
 
     const userUrls = await db.query.urls.findMany({
@@ -42,23 +38,17 @@ export async function getUserUrlsAction(
       orderBy: (urls, { desc }) => [desc(urls.createdAt)]
     });
 
-    return {
-      success: true,
-      data: userUrls.map(
-        (url): UserUrl => ({
-          id: url.id,
-          originalUrl: url.originalUrl,
-          shortCode: url.shortCode,
-          createdAt: url.createdAt,
-          clicks: url.clicks
-        })
-      )
-    };
+    const mappedUrls: UserUrl[] = userUrls.map(url => ({
+      id: url.id,
+      originalUrl: url.originalUrl,
+      shortCode: url.shortCode,
+      createdAt: url.createdAt,
+      clicks: url.clicks
+    }));
+
+    return createSuccessResponse(mappedUrls);
   } catch (error) {
     console.error('Error getting user URLs:', error);
-    return {
-      success: false,
-      error: 'Failed to retrieve URLs'
-    };
+    return createServerErrorResponse('Failed to retrieve URLs');
   }
 }

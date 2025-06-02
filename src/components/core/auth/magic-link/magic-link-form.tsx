@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import EmailSent from '@/components/core/auth/magic-link/magic-link-email-sent';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -24,8 +25,6 @@ import {
   type SignInWithMagicLinkSchema,
   signInWithMagicLinkSchema
 } from '@/schemas/auth.schema';
-
-import EmailSent from './magic-link-email-sent';
 
 export default function MagicLinkForm() {
   const [isPending, setIsPending] = useState(false);

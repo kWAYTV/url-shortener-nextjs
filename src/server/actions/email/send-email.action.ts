@@ -1,44 +1,86 @@
 'use server';
 
-import { type CreateEmailResponseSuccess, type ErrorResponse } from 'resend';
-
 import { env } from '@/env';
 import { resend } from '@/lib/resend';
+import { type ApiResponse } from '@/types/api';
+
+interface SendEmailParams {
+  to: string;
+  subject: string;
+  html: string;
+}
+
+interface SendEmailResult {
+  id: string;
+  message?: string;
+}
 
 export async function sendEmailAction({
   to,
   subject,
   html
-}: {
-  to: string;
-  subject: string;
-  html: string;
-}): Promise<CreateEmailResponseSuccess | ErrorResponse> {
+}: SendEmailParams): Promise<ApiResponse<SendEmailResult>> {
   try {
+    // Input validation
+    if (!to || typeof to !== 'string' || !to.includes('@')) {
+      return {
+        success: false,
+        error: 'Invalid email address'
+      };
+    }
+
+    if (
+      !subject ||
+      typeof subject !== 'string' ||
+      subject.trim().length === 0
+    ) {
+      return {
+        success: false,
+        error: 'Subject is required'
+      };
+    }
+
+    if (!html || typeof html !== 'string' || html.trim().length === 0) {
+      return {
+        success: false,
+        error: 'Email content is required'
+      };
+    }
+
     const { data, error } = await resend.emails.send({
       from: env.RESEND_FROM_EMAIL,
-      to,
-      subject,
+      to: to.trim(),
+      subject: subject.trim(),
       html
     });
 
     if (error) {
-      return error;
-    }
-
-    if (!data) {
+      console.error('Resend error:', error);
       return {
-        message: 'Failed to send email',
-        name: 'internal_server_error'
-      } as ErrorResponse;
+        success: false,
+        error: error.message || 'Failed to send email'
+      };
     }
 
-    return data;
-  } catch (error) {
+    if (!data?.id) {
+      return {
+        success: false,
+        error: 'Email was sent but no confirmation received'
+      };
+    }
+
     return {
-      message:
-        error instanceof Error ? error.message : 'Unknown error occurred',
-      name: 'internal_server_error'
-    } as ErrorResponse;
+      success: true,
+      data: {
+        id: data.id,
+        message: 'Email sent successfully'
+      }
+    };
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email'
+    };
   }
 }

@@ -1,50 +1,54 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
 
-import { auth } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { db, eq } from '@/lib/db';
 import { urls } from '@/schemas/db.schema';
 import { updateUrlSchema } from '@/schemas/url.schema';
 import { type ApiResponse } from '@/types/api';
 
+interface UpdateUrlParams {
+  id: number;
+  customCode: string;
+}
+
+interface UpdateUrlResult {
+  shortUrl: string;
+  shortCode: string;
+}
+
 export async function updateUrlAction(
-  formData: FormData
-): Promise<ApiResponse<{ shortUrl: string }>> {
+  params: UpdateUrlParams
+): Promise<ApiResponse<UpdateUrlResult>> {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers()
-    });
+    const session = await getSession();
 
-    const userId = session?.user?.id;
-
-    if (!userId) {
+    if (!session?.user?.id) {
       return {
         success: false,
-        error: 'You must be logged in to update a URL'
+        error: 'You must be logged in to update URLs'
       };
     }
 
-    const validatedFields = updateUrlSchema.safeParse({
-      id: formData.get('id'),
-      customCode: formData.get('customCode')
-    });
+    const validatedFields = updateUrlSchema.safeParse(params);
 
     if (!validatedFields.success) {
+      const errors = validatedFields.error.flatten().fieldErrors;
+      const errorMessage =
+        errors.id?.[0] || errors.customCode?.[0] || 'Invalid data';
+
       return {
         success: false,
-        error:
-          validatedFields.error.flatten().fieldErrors.id?.[0] ||
-          validatedFields.error.flatten().fieldErrors.customCode?.[0] ||
-          'Invalid URL ID'
+        error: errorMessage
       };
     }
 
     const { id, customCode } = validatedFields.data;
 
+    // Check if URL exists and belongs to user
     const existingUrl = await db.query.urls.findFirst({
       where: (urls, { eq, and }) =>
-        and(eq(urls.id, id), eq(urls.userId, userId))
+        and(eq(urls.id, id), eq(urls.userId, session.user.id))
     });
 
     if (!existingUrl) {
@@ -54,18 +58,21 @@ export async function updateUrlAction(
       };
     }
 
+    // Check if custom code is already in use by another URL
     const codeExists = await db.query.urls.findFirst({
       where: (urls, { eq, and, ne }) =>
-        and(eq(urls.shortCode, customCode), ne(urls.id, id))
+        and(eq(urls.shortCode, customCode), ne(urls.id, id)),
+      columns: { id: true } // Only select id for performance
     });
 
     if (codeExists) {
       return {
         success: false,
-        error: 'Custom code already exists'
+        error: 'This custom code is already in use'
       };
     }
 
+    // Update the URL
     await db
       .update(urls)
       .set({
@@ -81,13 +88,16 @@ export async function updateUrlAction(
 
     return {
       success: true,
-      data: { shortUrl }
+      data: {
+        shortUrl,
+        shortCode: customCode
+      }
     };
   } catch (error) {
-    console.error('Failed to update URL', error);
+    console.error('Error updating URL:', error);
     return {
       success: false,
-      error: 'An error occurred'
+      error: 'Failed to update URL. Please try again.'
     };
   }
 }

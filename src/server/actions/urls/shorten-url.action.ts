@@ -2,36 +2,41 @@
 
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
 
-import { auth } from '@/lib/auth';
+import { getSession } from '@/lib/auth-utils';
 import { db } from '@/lib/db';
 import { ensureHttps } from '@/lib/url-utils';
 import { urls } from '@/schemas/db.schema';
 import { shortenUrlSchema } from '@/schemas/url.schema';
 import { type ApiResponse } from '@/types/api';
 
-export async function shortenUrlAction(url: string): Promise<
-  ApiResponse<{
-    shortUrl: string;
-    shortCode: string;
-  }>
-> {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers()
-    });
+interface ShortenUrlResult {
+  shortUrl: string;
+  shortCode: string;
+}
 
-    if (!session) {
+export async function shortenUrlAction(
+  url: string
+): Promise<ApiResponse<ShortenUrlResult>> {
+  try {
+    // Input validation
+    if (!url || typeof url !== 'string') {
       return {
         success: false,
-        error: 'Unauthorized'
+        error: 'URL is required'
       };
     }
 
-    const userId = session.user.id;
+    const session = await getSession();
 
-    const validatedFields = shortenUrlSchema.safeParse({ url });
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: 'You must be logged in to shorten URLs'
+      };
+    }
+
+    const validatedFields = shortenUrlSchema.safeParse({ url: url.trim() });
 
     if (!validatedFields.success) {
       return {
@@ -41,15 +46,34 @@ export async function shortenUrlAction(url: string): Promise<
     }
 
     const originalUrl = ensureHttps(validatedFields.data.url);
-    let shortCode = nanoid(6);
 
+    // Check for existing URL for this user to prevent duplicates
+    const existingUrlForUser = await db.query.urls.findFirst({
+      where: (urls, { eq, and }) =>
+        and(eq(urls.originalUrl, originalUrl), eq(urls.userId, session.user.id))
+    });
+
+    if (existingUrlForUser) {
+      const baseUrl =
+        process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      return {
+        success: true,
+        data: {
+          shortUrl: `${baseUrl}/r/${existingUrlForUser.shortCode}`,
+          shortCode: existingUrlForUser.shortCode
+        }
+      };
+    }
+
+    // Generate unique short code with collision handling
+    let shortCode = nanoid(6);
     let attempts = 0;
     const maxAttempts = 10;
 
-    // Handle collisions with a retry limit
     while (attempts < maxAttempts) {
       const existingUrl = await db.query.urls.findFirst({
-        where: (urls, { eq }) => eq(urls.shortCode, shortCode)
+        where: (urls, { eq }) => eq(urls.shortCode, shortCode),
+        columns: { id: true } // Only select id for performance
       });
 
       if (!existingUrl) break;
@@ -59,24 +83,27 @@ export async function shortenUrlAction(url: string): Promise<
     }
 
     if (attempts >= maxAttempts) {
+      console.error('Failed to generate unique short code after max attempts');
       return {
         success: false,
         error: 'Unable to generate unique short code. Please try again.'
       };
     }
 
+    const now = new Date();
     await db.insert(urls).values({
       originalUrl,
       shortCode,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      userId: userId || null
+      createdAt: now,
+      updatedAt: now,
+      userId: session.user.id,
+      clicks: 0
     });
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const shortUrl = `${baseUrl}/r/${shortCode}`;
 
-    revalidatePath('/');
+    revalidatePath('/dashboard');
 
     return {
       success: true,
@@ -85,10 +112,11 @@ export async function shortenUrlAction(url: string): Promise<
         shortCode
       }
     };
-  } catch {
+  } catch (error) {
+    console.error('Error shortening URL:', error);
     return {
       success: false,
-      error: 'Internal server error. Please try again.'
+      error: 'Failed to shorten URL. Please try again.'
     };
   }
 }
