@@ -1,5 +1,6 @@
 import { AlertTriangle } from 'lucide-react';
 
+import { UrlShortenerForm } from '@/components/core/urls/url-shortener-form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Card,
@@ -9,7 +10,6 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { type Session } from '@/lib/auth';
-import { UrlShortenerForm } from '@/components/core/urls/url-shortener-form';
 
 interface DashboardContentProps {
   user: Session['user'];
