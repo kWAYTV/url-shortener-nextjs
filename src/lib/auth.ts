@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
+import { magicLink } from 'better-auth/plugins';
 
 import { env } from '@/env';
 import { db } from '@/lib/db';
@@ -71,7 +72,19 @@ export const auth = betterAuth({
     }
   },
 
-  plugins: [admin(), nextCookies()]
+  plugins: [
+    admin(),
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await sendEmailAction({
+          to: email,
+          subject: 'Magic Link Login',
+          html: `<p>Please click the link below to log in.</p><a href="${String(url)}">Log in</a>`
+        });
+      }
+    }),
+    nextCookies()
+  ]
 });
 
 export type Session = typeof auth.$Infer.Session;

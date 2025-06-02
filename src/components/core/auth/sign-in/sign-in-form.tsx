@@ -1,8 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { LinkIcon, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { type SignInSchema, signInSchema } from '@/schemas/auth';
 
 export default function SignInForm() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -38,14 +40,12 @@ export default function SignInForm() {
   });
 
   const handleEmailSignIn = async (data: SignInSchema) => {
-    await signIn.email(
-      {
-        email: data.email,
-        password: data.password,
-        rememberMe,
-        callbackURL: '/dashboard'
-      },
-      {
+    await signIn.email({
+      email: data.email,
+      password: data.password,
+      rememberMe,
+      callbackURL: '/dashboard',
+      fetchOptions: {
         onRequest: () => {
           setLoading(true);
           toast('Signing in...');
@@ -62,16 +62,14 @@ export default function SignInForm() {
           setLoading(false);
         }
       }
-    );
+    });
   };
 
   const handleSocialSignIn = async (provider: 'github' | 'google') => {
-    await signIn.social(
-      {
-        provider,
-        callbackURL: '/dashboard'
-      },
-      {
+    await signIn.social({
+      provider,
+      callbackURL: '/dashboard',
+      fetchOptions: {
         onRequest: () => {
           setLoading(true);
           toast('Signing in...');
@@ -81,9 +79,14 @@ export default function SignInForm() {
         },
         onError: ctx => {
           toast.error(ctx.error.message);
+          setLoading(false);
         }
       }
-    );
+    });
+  };
+
+  const handleMagicLinkSignIn = async () => {
+    router.push('/sign-in/magic-link');
   };
 
   return (
@@ -200,6 +203,16 @@ export default function SignInForm() {
                   ></path>
                 </svg>
                 Sign in with Github
+              </Button>
+              <Button
+                variant='outline'
+                className={cn('w-full gap-2')}
+                disabled={loading}
+                onClick={() => handleMagicLinkSignIn()}
+                type='button'
+              >
+                <LinkIcon size={16} />
+                Sign in with Magic Link
               </Button>
             </div>
 
