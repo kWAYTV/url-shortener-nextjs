@@ -56,6 +56,7 @@ export default function ResendVerificationEmailForm() {
         },
         onError: ctx => {
           toast.error(ctx.error.message);
+          setIsPending(false);
         }
       }
     });

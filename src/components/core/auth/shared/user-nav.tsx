@@ -31,21 +31,27 @@ export function UserNav() {
   const [pending, setPending] = useState(false);
 
   const handleSignOut = async () => {
-    try {
-      setPending(true);
-      await signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            router.push('/sign-in');
-            toast.success('Signed out successfully');
-          }
+    setPending(true);
+
+    await signOut({
+      fetchOptions: {
+        onRequest: () => {
+          setPending(true);
+          toast('Signing out...');
+        },
+        onSuccess: () => {
+          router.push('/sign-in');
+          toast.success('Signed out successfully');
+        },
+        onResponse: () => {
+          setPending(false);
+        },
+        onError: ctx => {
+          toast.error(ctx.error.message);
+          setPending(false);
         }
-      });
-    } catch {
-      toast.error('Error signing out');
-    } finally {
-      setPending(false);
-    }
+      }
+    });
   };
 
   const userInitials = session?.user?.name

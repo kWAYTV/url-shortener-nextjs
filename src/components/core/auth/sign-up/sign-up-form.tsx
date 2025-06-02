@@ -75,6 +75,7 @@ export default function SignUpForm() {
         },
         onError: ctx => {
           toast.error(ctx.error.message);
+          setLoading(false);
         },
         onSuccess: async () => {
           toast.success(

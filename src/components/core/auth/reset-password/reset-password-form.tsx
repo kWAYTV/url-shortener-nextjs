@@ -48,16 +48,26 @@ function ResetPasswordFormContent() {
 
   const onSubmit = async (data: ResetPasswordSchema) => {
     setIsPending(true);
-    const { error } = await resetPassword({
-      newPassword: data.password
+    await resetPassword({
+      newPassword: data.password,
+      fetchOptions: {
+        onRequest: () => {
+          setIsPending(true);
+          toast('Resetting password...');
+        },
+        onSuccess: () => {
+          toast.success('Password reset successful. Login to continue.');
+          router.push('/sign-in');
+        },
+        onResponse: () => {
+          setIsPending(false);
+        },
+        onError: ctx => {
+          toast.error(ctx.error.message);
+          setIsPending(false);
+        }
+      }
     });
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Password reset successful. Login to continue.');
-      router.push('/sign-in');
-    }
-    setIsPending(false);
   };
 
   if (error === 'invalid_token') {

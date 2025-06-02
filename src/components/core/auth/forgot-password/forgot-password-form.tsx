@@ -44,19 +44,28 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (data: ForgotPasswordSchema) => {
     setIsPending(true);
 
-    const { error } = await forgetPassword({
+    await forgetPassword({
       email: data.email,
-      redirectTo: '/reset-password'
+      redirectTo: '/reset-password',
+      fetchOptions: {
+        onRequest: () => {
+          setIsPending(true);
+          toast('Sending reset link...');
+        },
+        onSuccess: () => {
+          toast.success(
+            'If an account exists with this email, you will receive a password reset link.'
+          );
+        },
+        onResponse: () => {
+          setIsPending(false);
+        },
+        onError: ctx => {
+          toast.error(ctx.error.message);
+          setIsPending(false);
+        }
+      }
     });
-
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success(
-        'If an account exists with this email, you will receive a password reset link.'
-      );
-    }
-    setIsPending(false);
   };
 
   return (

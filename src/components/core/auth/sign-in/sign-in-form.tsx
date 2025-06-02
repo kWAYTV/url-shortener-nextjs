@@ -59,6 +59,7 @@ export default function SignInForm() {
         },
         onError: ctx => {
           toast.error(ctx.error.message);
+          setLoading(false);
         }
       }
     );
