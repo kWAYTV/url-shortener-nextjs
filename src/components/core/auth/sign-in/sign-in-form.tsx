@@ -77,6 +77,10 @@ export default function SignInForm() {
         onResponse: () => {
           setLoading(false);
         },
+        onSuccess: () => {
+          toast.success('Signed in successfully');
+          setRememberMe(false);
+        },
         onError: ctx => {
           toast.error(ctx.error.message);
           setLoading(false);
