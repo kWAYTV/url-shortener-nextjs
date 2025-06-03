@@ -88,7 +88,9 @@ export const auth = betterAuth({
       customPasswordCompromisedMessage: 'Please choose a more secure password.'
     }),
     nextCookies()
-  ]
+  ],
+
+  trustedOrigins: ['http://localhost:3000', 'https://trohs.zip']
 });
 
 export type Session = typeof auth.$Infer.Session;
