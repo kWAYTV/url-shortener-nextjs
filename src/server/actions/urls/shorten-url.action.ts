@@ -3,7 +3,7 @@
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
 
-import { getSession } from '@/lib/auth-utils';
+import { getUser } from '@/lib/auth-utils';
 import { db } from '@/lib/db';
 import { ensureHttps } from '@/lib/url-utils';
 import { urls } from '@/schemas/db.schema';
@@ -28,14 +28,7 @@ export async function shortenUrlAction(
   params: ShortenUrlParams
 ): Promise<ApiResponse<ShortenUrlResult>> {
   try {
-    const session = await getSession();
-
-    if (!session?.user?.id) {
-      return {
-        success: false,
-        error: 'You must be logged in to shorten URLs'
-      };
-    }
+    const user = await getUser();
 
     const validatedFields = urlSchema.safeParse(params);
 
@@ -60,7 +53,7 @@ export async function shortenUrlAction(
       if (
         safetyCheck.data.category === 'malicious' &&
         safetyCheck.data.confidence > 0.7 &&
-        session?.user?.role !== 'admin'
+        user?.role !== 'admin'
       ) {
         return {
           success: false,
@@ -93,7 +86,7 @@ export async function shortenUrlAction(
       shortCode,
       createdAt: now,
       updatedAt: now,
-      userId: session.user.id,
+      userId: user?.id || null,
       clicks: 0,
       flagged,
       flagReason

@@ -117,7 +117,7 @@ export function EditUrlModal({
             <DialogFooter className='sm:justify-end'>
               <Button
                 type='button'
-                variant={'outline'}
+                variant='outline'
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
               >

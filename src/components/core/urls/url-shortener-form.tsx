@@ -24,6 +24,8 @@ import { useSession } from '@/lib/auth-client';
 import { urlSchema, type UrlSchemaType } from '@/schemas/url.schema';
 import { shortenUrlAction } from '@/server/actions/urls/shorten-url.action';
 
+import { SignupSuggestionDialog } from '../dialogs/sign-up-suggestion-dialog';
+
 interface ShortenedUrlResult {
   shortUrl: string;
   shortCode: string;
@@ -40,6 +42,7 @@ export function UrlShortenerForm() {
   const [result, setResult] = useState<ShortenedUrlResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSignupDialog, setShowSignupDialog] = useState(false);
   const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
   const [flaggedInfo, setFlaggedInfo] = useState<{
     flagged: boolean;
@@ -110,9 +113,9 @@ export function UrlShortenerForm() {
         router.refresh();
       }
 
-      /* if (!session?.user) {
+      if (!session?.user) {
         setShowSignupDialog(true);
-      } */
+      }
     } catch {
       setError('Network error. Please try again.');
     } finally {
@@ -216,7 +219,7 @@ export function UrlShortenerForm() {
 
                     <Button
                       type='button'
-                      variant={'outline'}
+                      variant='outline'
                       className='flex-shrink-0'
                       onClick={showQrCode}
                     >
@@ -251,6 +254,12 @@ export function UrlShortenerForm() {
             )}
           </form>
         </Form>
+
+        <SignupSuggestionDialog
+          isOpen={showSignupDialog}
+          onOpenChange={setShowSignupDialog}
+          shortUrl={result?.shortUrl || ''}
+        />
 
         {result?.shortUrl && result?.shortCode && (
           <QRCodeModal
