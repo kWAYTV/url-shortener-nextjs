@@ -1,6 +1,6 @@
 'use server';
 
-import { db, eq } from '@/lib/db';
+import { db, eq, sql } from '@/lib/db';
 import { urls } from '@/schemas/db.schema';
 import { type ApiResponse } from '@/types/api';
 
@@ -10,6 +10,7 @@ interface GetUrlResult {
   flagReason?: string | null;
 }
 
+// Get URL data without incrementing clicks
 export async function getUrlByShortCodeAction(
   shortCode: string
 ): Promise<ApiResponse<GetUrlResult>> {
@@ -37,15 +38,6 @@ export async function getUrlByShortCodeAction(
       };
     }
 
-    // Update click count atomically
-    await db
-      .update(urls)
-      .set({
-        clicks: url.clicks + 1,
-        updatedAt: new Date()
-      })
-      .where(eq(urls.shortCode, shortCode.trim()));
-
     return {
       success: true,
       data: {
@@ -59,6 +51,44 @@ export async function getUrlByShortCodeAction(
     return {
       success: false,
       error: 'An error occurred while fetching the URL'
+    };
+  }
+}
+
+// Increment click count atomically
+export async function incrementUrlClickAction(
+  shortCode: string
+): Promise<ApiResponse<{ success: boolean; clicks?: number }>> {
+  try {
+    if (
+      !shortCode ||
+      typeof shortCode !== 'string' ||
+      shortCode.trim() === ''
+    ) {
+      return {
+        success: false,
+        error: 'Invalid short code provided'
+      };
+    }
+
+    // Use atomic increment to prevent race conditions
+    await db
+      .update(urls)
+      .set({
+        clicks: sql`${urls.clicks} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(urls.shortCode, shortCode.trim()));
+
+    return {
+      success: true,
+      data: { success: true }
+    };
+  } catch (error) {
+    console.error('Error incrementing click count:', error);
+    return {
+      success: false,
+      error: 'Failed to increment click count'
     };
   }
 }

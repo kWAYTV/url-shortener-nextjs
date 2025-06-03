@@ -8,6 +8,11 @@ import { toast } from 'sonner';
 import { EditUrlModal } from '@/components/core/modals/edit-url-modal';
 import { QRCodeModal } from '@/components/core/modals/qr-code-modal';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import { env } from '@/env';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { deleteUrlAction } from '@/server/actions/urls/delete-url.action';
@@ -145,34 +150,70 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
               <tr key={url.id} className='hover:bg-muted/50 border-b'>
                 <td className='px-4 py-3'>
                   <div className='flex items-center gap-2'>
-                    <div className='max-w-xs truncate' title={url.originalUrl}>
-                      {url.originalUrl}
-                    </div>
-                    <a
-                      href={url.originalUrl}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-muted-foreground hover:text-foreground'
-                      aria-label='Open original URL'
-                    >
-                      <ExternalLink className='size-4' />
-                    </a>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className='hover:text-primary max-w-xs cursor-pointer truncate transition-colors'
+                          title={url.originalUrl}
+                          onClick={() => handleCopy(url.originalUrl)}
+                        >
+                          {url.originalUrl}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to copy original URL</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <a
+                          href={url.originalUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='text-muted-foreground hover:text-foreground'
+                          aria-label='Open original URL'
+                        >
+                          <ExternalLink className='size-4' />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Open original URL</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </td>
                 <td className='px-4 py-3'>
                   <div className='flex items-center gap-2'>
-                    <div className='truncate' title={url.shortUrl}>
-                      {url.shortUrl}
-                    </div>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      onClick={() => handleCopy(url.shortUrl)}
-                      className='size-8'
-                      aria-label='Copy short URL'
-                    >
-                      <Copy className='size-4' />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className='hover:text-primary cursor-pointer truncate transition-colors'
+                          title={url.shortUrl}
+                          onClick={() => handleCopy(url.shortUrl)}
+                        >
+                          {url.shortUrl}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to copy short URL</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => handleCopy(url.shortUrl)}
+                          className='size-8'
+                          aria-label='Copy short URL'
+                        >
+                          <Copy className='size-4' />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy to clipboard</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </td>
                 <td className='text-muted-foreground px-4 py-3'>
@@ -185,40 +226,63 @@ export default function UserUrlsTable({ urls }: UserUrlsTableProps) {
                 </td>
                 <td className='px-4 py-3'>
                   <div className='flex justify-end gap-1'>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      onClick={() => showQrCode(url.shortCode)}
-                      className='text-primary hover:text-primary size-8'
-                      aria-label='Generate QR code'
-                    >
-                      <QrCode className='size-4' />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => showQrCode(url.shortCode)}
+                          className='text-primary hover:text-primary size-8'
+                          aria-label='Generate QR code'
+                        >
+                          <QrCode className='size-4' />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Generate QR code</p>
+                      </TooltipContent>
+                    </Tooltip>
 
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      onClick={() => handleEdit(url.id, url.shortCode)}
-                      className='text-primary hover:text-primary size-8'
-                      aria-label='Edit URL'
-                    >
-                      <Edit className='size-4' />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => handleEdit(url.id, url.shortCode)}
+                          className='text-primary hover:text-primary size-8'
+                          aria-label='Edit URL'
+                        >
+                          <Edit className='size-4' />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit short code</p>
+                      </TooltipContent>
+                    </Tooltip>
 
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      onClick={() => handleDelete(url.id)}
-                      disabled={isDeleting === url.id}
-                      className='text-destructive hover:text-destructive size-8'
-                      aria-label='Delete URL'
-                    >
-                      {isDeleting === url.id ? (
-                        <div className='size-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
-                      ) : (
-                        <Trash2Icon className='size-4' />
-                      )}
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => handleDelete(url.id)}
+                          disabled={isDeleting === url.id}
+                          className='text-destructive hover:text-destructive size-8'
+                          aria-label='Delete URL'
+                        >
+                          {isDeleting === url.id ? (
+                            <div className='size-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                          ) : (
+                            <Trash2Icon className='size-4' />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {isDeleting === url.id ? 'Deleting...' : 'Delete URL'}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </td>
               </tr>
