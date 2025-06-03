@@ -17,6 +17,39 @@ export const auth = betterAuth({
     provider: 'pg'
   }),
 
+  socialProviders: {
+    github: {
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET
+    }
+  },
+
+  session: {
+    expiresIn: 30 * 24 * 60 * 60,
+
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60
+    }
+  },
+
+  account: {
+    accountLinking: {
+      enabled: true
+    }
+  },
+
+  rateLimit: {
+    storage: 'database',
+    modelName: 'ratelimit'
+  },
+
+  trustedOrigins: [
+    'better-auth://',
+    'http://localhost:3000',
+    'https://trohs.zip'
+  ],
+
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
@@ -53,28 +86,6 @@ export const auth = betterAuth({
     }
   },
 
-  socialProviders: {
-    github: {
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET
-    }
-  },
-
-  session: {
-    expiresIn: 30 * 24 * 60 * 60,
-
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60
-    }
-  },
-
-  account: {
-    accountLinking: {
-      enabled: true
-    }
-  },
-
   plugins: [
     admin(),
     magicLink({
@@ -90,17 +101,6 @@ export const auth = betterAuth({
       customPasswordCompromisedMessage: 'Please choose a more secure password.'
     }),
     nextCookies()
-  ],
-
-  rateLimit: {
-    storage: 'database',
-    modelName: 'ratelimit'
-  },
-
-  trustedOrigins: [
-    'better-auth://',
-    'http://localhost:3000',
-    'https://trohs.zip'
   ]
 });
 
