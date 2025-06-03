@@ -2,7 +2,9 @@
 
 import { Ellipsis, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 import { CollapseMenuButton } from '@/components/core/admin/collapse-menu-button';
 import { Button } from '@/components/ui/button';
@@ -14,6 +16,7 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip';
 import { getMenuList } from '@/consts/menu-list';
+import { signOut } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 
 interface MenuProps {
@@ -23,6 +26,33 @@ interface MenuProps {
 export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
   const menuList = getMenuList();
+  const router = useRouter();
+
+  const [pending, setPending] = useState(false);
+
+  const handleSignOut = async () => {
+    setPending(true);
+
+    await signOut({
+      fetchOptions: {
+        onRequest: () => {
+          setPending(true);
+          toast('Signing out...');
+        },
+        onSuccess: () => {
+          router.push('/');
+          toast.success('Signed out successfully');
+        },
+        onResponse: () => {
+          setPending(false);
+        },
+        onError: ctx => {
+          toast.error(ctx.error.message);
+          setPending(false);
+        }
+      }
+    });
+  };
 
   return (
     <ScrollArea className='[&>div>div[style]]:!block'>
@@ -118,7 +148,8 @@ export function Menu({ isOpen }: MenuProps) {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => {}}
+                    onClick={handleSignOut}
+                    disabled={pending}
                     variant='outline'
                     className='mt-5 h-10 w-full justify-center'
                   >
@@ -131,12 +162,14 @@ export function Menu({ isOpen }: MenuProps) {
                         isOpen === false ? 'hidden opacity-0' : 'opacity-100'
                       )}
                     >
-                      Sign out
+                      {pending ? 'Signing out...' : 'Sign out'}
                     </p>
                   </Button>
                 </TooltipTrigger>
                 {isOpen === false && (
-                  <TooltipContent side='right'>Sign out</TooltipContent>
+                  <TooltipContent side='right'>
+                    {pending ? 'Signing out...' : 'Sign out'}
+                  </TooltipContent>
                 )}
               </Tooltip>
             </TooltipProvider>
