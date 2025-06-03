@@ -11,6 +11,8 @@ import { hashPassword, verifyPassword } from '@/lib/hash';
 import { sendEmailAction } from '@/server/actions/email/send-email.action';
 
 export const auth = betterAuth({
+  baseURL: env.NEXT_PUBLIC_APP_URL,
+
   database: drizzleAdapter(db, {
     provider: 'pg'
   }),
