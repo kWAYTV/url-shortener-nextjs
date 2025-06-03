@@ -18,6 +18,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { env } from '@/env';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { useSession } from '@/lib/auth-client';
@@ -33,7 +34,7 @@ interface ShortenedUrlResult {
 }
 
 export function UrlShortenerForm() {
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
 
   const user = session?.user;
   const router = useRouter();
@@ -161,31 +162,40 @@ export function UrlShortenerForm() {
               </Button>
             </div>
 
-            <FormField
-              control={form.control}
-              name='customCode'
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className='flex items-center'>
-                      <span className='text-muted-foreground mr-2 text-sm'>
-                        {env.NEXT_PUBLIC_APP_URL || window.location.origin}
-                        /r/
-                      </span>
-                      <Input
-                        placeholder='Custom code (optional)'
-                        {...field}
-                        value={field.value || ''}
-                        onChange={e => field.onChange(e.target.value || '')}
-                        disabled={isLoading}
-                        className='flex-1'
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {isPending ? (
+              <div className='flex items-center'>
+                <Skeleton className='mr-2 h-4 w-24' />
+                <Skeleton className='h-9 flex-1' />
+              </div>
+            ) : (
+              session?.user && (
+                <FormField
+                  control={form.control}
+                  name='customCode'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <div className='flex items-center'>
+                          <span className='text-muted-foreground mr-2 text-sm'>
+                            {env.NEXT_PUBLIC_APP_URL || window.location.origin}
+                            /r/
+                          </span>
+                          <Input
+                            placeholder='Custom code (optional)'
+                            {...field}
+                            value={field.value || ''}
+                            onChange={e => field.onChange(e.target.value || '')}
+                            disabled={isLoading}
+                            className='flex-1'
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )
+            )}
 
             {error && (
               <div className='bg-destructive/10 text-destructive rounded-md p-3 text-sm'>
