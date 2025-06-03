@@ -50,7 +50,7 @@ export function getMenuList(): Group[] {
       menus: [
         {
           href: '/admin/urls',
-          label: 'URL Management',
+          label: 'URLs',
           icon: Link2
         },
         {
@@ -60,12 +60,12 @@ export function getMenuList(): Group[] {
         },
         {
           href: '/admin/users',
-          label: 'User Management',
+          label: 'Users',
           icon: Users
         },
         {
           href: '/admin/database',
-          label: 'Database Management',
+          label: 'Database',
           icon: Database
         }
       ]
