@@ -1,6 +1,6 @@
 'use client';
 
-import { ChartBar, LayoutGrid, LogOut, User } from 'lucide-react';
+import { ChartBar, LayoutGrid, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -102,12 +102,6 @@ export function UserNav() {
             <Link href='/dashboard' className='flex items-center'>
               <LayoutGrid className='text-muted-foreground mr-3 h-4 w-4' />
               Dashboard
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem className='hover:cursor-pointer' asChild>
-            <Link href='/account' className='flex items-center'>
-              <User className='text-muted-foreground mr-3 h-4 w-4' />
-              Account
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className='hover:cursor-pointer' asChild>
