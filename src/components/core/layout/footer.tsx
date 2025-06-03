@@ -11,7 +11,7 @@ export default function Footer() {
               href='/'
               className='text-foreground text-xl font-bold transition-transform duration-200 ease-in-out hover:scale-110'
             >
-              short
+              trohs.zip
             </Link>
             <span className='hidden md:inline'>•</span>
             <Link
@@ -34,7 +34,7 @@ export default function Footer() {
             </p>
             <span className='hidden md:inline'>•</span>
             <p className='hidden md:block'>
-              © {new Date().getFullYear()} short
+              © {new Date().getFullYear()} trohs.zip
             </p>
           </div>
         </div>
