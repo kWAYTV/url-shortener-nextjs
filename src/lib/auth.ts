@@ -3,6 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
 import { magicLink } from 'better-auth/plugins';
+import { haveIBeenPwned } from 'better-auth/plugins';
 
 import { env } from '@/env';
 import { db } from '@/lib/db';
@@ -82,6 +83,9 @@ export const auth = betterAuth({
           html: `<p>Please click the link below to log in.</p><a href="${String(url)}">Log in</a>`
         });
       }
+    }),
+    haveIBeenPwned({
+      customPasswordCompromisedMessage: 'Please choose a more secure password.'
     }),
     nextCookies()
   ]
