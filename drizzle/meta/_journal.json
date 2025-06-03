@@ -15,6 +15,13 @@
       "when": 1748896783240,
       "tag": "0001_rainy_tigra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1748959817299,
+      "tag": "0002_sad_king_bedlam",
+      "breakpoints": true
     }
   ]
 }

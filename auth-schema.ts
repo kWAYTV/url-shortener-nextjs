@@ -1,17 +1,11 @@
-import { relations } from 'drizzle-orm';
 import {
-  bigint,
-  boolean,
-  integer,
-  pgEnum,
   pgTable,
-  serial,
   text,
+  bigint,
   timestamp,
-  varchar
+  boolean,
+  integer
 } from 'drizzle-orm/pg-core';
-
-export const userRoles = pgEnum('user_roles', ['admin', 'user']);
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -27,7 +21,7 @@ export const user = pgTable('user', {
   updatedAt: timestamp('updated_at')
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
-  role: userRoles('role').default('user').notNull(),
+  role: text('role'),
   banned: boolean('banned'),
   banReason: text('ban_reason'),
   banExpires: timestamp('ban_expires')
@@ -84,42 +78,3 @@ export const ratelimit = pgTable('ratelimit', {
   count: integer('count'),
   lastRequest: bigint('last_request', { mode: 'number' })
 });
-
-export const urls = pgTable('urls', {
-  id: serial('id').primaryKey(),
-  originalUrl: varchar('original_url', { length: 2000 }).notNull(),
-  shortCode: varchar('short_code', { length: 10 }).notNull().unique(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  clicks: integer('clicks').default(0).notNull(),
-  userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
-  flagged: boolean('flagged').default(false).notNull(),
-  flagReason: text('flag_reason')
-});
-
-export const userRelations = relations(user, ({ many }) => ({
-  urls: many(urls),
-  sessions: many(session),
-  accounts: many(account)
-}));
-
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id]
-  })
-}));
-
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id]
-  })
-}));
-
-export const urlsRelations = relations(urls, ({ one }) => ({
-  user: one(user, {
-    fields: [urls.userId],
-    references: [user.id]
-  })
-}));

@@ -90,6 +90,11 @@ export const auth = betterAuth({
     nextCookies()
   ],
 
+  rateLimit: {
+    storage: 'database',
+    modelName: 'ratelimit'
+  },
+
   trustedOrigins: [
     'better-auth://',
     'http://localhost:3000',
