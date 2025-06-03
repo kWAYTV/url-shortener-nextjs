@@ -1,6 +1,6 @@
 'use client';
 
-import { ChartBar, LayoutGrid, LogOut } from 'lucide-react';
+import { ChartBar, LayoutGrid, LockIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -104,6 +104,14 @@ export function UserNav() {
               Dashboard
             </Link>
           </DropdownMenuItem>
+          {session?.user?.role === 'admin' && (
+            <DropdownMenuItem className='hover:cursor-pointer' asChild>
+              <Link href='/admin' className='flex items-center'>
+                <LockIcon className='text-muted-foreground mr-3 h-4 w-4' />
+                Admin Panel
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className='hover:cursor-pointer' asChild>
             <Link href='/dashboard/stats' className='flex items-center'>
               <ChartBar className='text-muted-foreground mr-3 h-4 w-4' />
