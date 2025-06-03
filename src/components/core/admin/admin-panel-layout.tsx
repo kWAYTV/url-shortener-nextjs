@@ -12,8 +12,10 @@ export default function AdminPanelLayout({
   children: React.ReactNode;
 }) {
   const sidebar = useStore(useSidebar, x => x);
+
   if (!sidebar) return null;
   const { getOpenState, settings } = sidebar;
+
   return (
     <>
       <Sidebar />
