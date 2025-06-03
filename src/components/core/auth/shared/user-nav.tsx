@@ -40,7 +40,7 @@ export function UserNav() {
           toast('Signing out...');
         },
         onSuccess: () => {
-          router.push('/sign-in');
+          router.push('/');
           toast.success('Signed out successfully');
         },
         onResponse: () => {
