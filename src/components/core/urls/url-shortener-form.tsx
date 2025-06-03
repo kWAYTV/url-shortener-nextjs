@@ -99,6 +99,8 @@ export function UrlShortenerForm() {
           toast.warning(response.data.message || 'This URL is flagged', {
             description: response.data.flagReason
           });
+        } else {
+          toast.success('URL shortened successfully');
         }
       } else {
         setError(response.error || 'Failed to shorten URL');
@@ -107,6 +109,10 @@ export function UrlShortenerForm() {
       if (user && pathname.includes('/dashboard')) {
         router.refresh();
       }
+
+      /* if (!session?.user) {
+        setShowSignupDialog(true);
+      } */
     } catch {
       setError('Network error. Please try again.');
     } finally {
