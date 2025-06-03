@@ -84,7 +84,9 @@ export const urls = pgTable('urls', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
   clicks: integer('clicks').default(0).notNull(),
-  userId: text('user_id').references(() => user.id, { onDelete: 'set null' })
+  userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
+  flagged: boolean('flagged').default(false).notNull(),
+  flagReason: text('flag_reason')
 });
 
 export const userRelations = relations(user, ({ many }) => ({

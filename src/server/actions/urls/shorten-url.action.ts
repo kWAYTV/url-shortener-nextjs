@@ -8,16 +8,20 @@ import { db } from '@/lib/db';
 import { ensureHttps } from '@/lib/url-utils';
 import { urls } from '@/schemas/db.schema';
 import { urlSchema } from '@/schemas/url.schema';
+import { checkUrlSafety } from '@/server/actions/urls/check-url-safety.action';
 import { type ApiResponse } from '@/types/api';
-
-interface ShortenUrlResult {
-  shortUrl: string;
-  shortCode: string;
-}
 
 interface ShortenUrlParams {
   url: string;
   customCode?: string;
+}
+
+interface ShortenUrlResult {
+  shortUrl: string;
+  shortCode: string;
+  flagged: boolean;
+  flagReason: string | null;
+  message?: string;
 }
 
 export async function shortenUrlAction(
@@ -45,55 +49,42 @@ export async function shortenUrlAction(
     const { url, customCode } = validatedFields.data;
     const originalUrl = ensureHttps(url);
 
-    // Check for existing URL for this user to prevent duplicates
-    const existingUrlForUser = await db.query.urls.findFirst({
-      where: (urls, { eq, and }) =>
-        and(eq(urls.originalUrl, originalUrl), eq(urls.userId, session.user.id))
-    });
+    const safetyCheck = await checkUrlSafety(originalUrl);
+    let flagged = false;
+    let flagReason = null;
 
-    if (existingUrlForUser) {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      return {
-        success: true,
-        data: {
-          shortUrl: `${baseUrl}/r/${existingUrlForUser.shortCode}`,
-          shortCode: existingUrlForUser.shortCode
-        }
-      };
+    if (safetyCheck.success && safetyCheck.data) {
+      flagged = safetyCheck.data.flagged;
+      flagReason = safetyCheck.data.reason;
+
+      if (
+        safetyCheck.data.category === 'malicious' &&
+        safetyCheck.data.confidence > 0.7 &&
+        session?.user?.role !== 'admin'
+      ) {
+        return {
+          success: false,
+          error: 'This URL is flagged as malicious'
+        };
+      }
     }
 
     // Use custom code if provided, otherwise generate a random one
-    let shortCode = customCode || nanoid(6);
-    let attempts = 0;
-    const maxAttempts = 10;
+    const shortCode = customCode || nanoid(6);
 
-    while (attempts < maxAttempts) {
-      const existingUrl = await db.query.urls.findFirst({
-        where: (urls, { eq }) => eq(urls.shortCode, shortCode),
-        columns: { id: true } // Only select id for performance
-      });
+    // check if short code is already in use
+    const existingUrl = await db.query.urls.findFirst({
+      where: (urls, { eq }) => eq(urls.shortCode, shortCode)
+    });
 
-      if (!existingUrl) break;
-
-      // If custom code is already taken, return error
+    if (existingUrl) {
       if (customCode) {
         return {
           success: false,
-          error: 'This custom code is already in use'
+          error: 'Custom code already in use'
         };
       }
-
-      // Generate new random code
-      shortCode = nanoid(6);
-      attempts++;
-    }
-
-    if (attempts >= maxAttempts) {
-      return {
-        success: false,
-        error: 'Unable to generate unique short code. Please try again.'
-      };
+      return shortenUrlAction({ url: originalUrl, customCode: shortCode });
     }
 
     const now = new Date();
@@ -103,7 +94,9 @@ export async function shortenUrlAction(
       createdAt: now,
       updatedAt: now,
       userId: session.user.id,
-      clicks: 0
+      clicks: 0,
+      flagged,
+      flagReason
     });
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -115,7 +108,12 @@ export async function shortenUrlAction(
       success: true,
       data: {
         shortUrl,
-        shortCode
+        shortCode,
+        flagged,
+        flagReason,
+        message: flagged
+          ? 'This URL has been flagged for review by our safety system. It may be temporarily limited until approved by an administrator.'
+          : undefined
       }
     };
   } catch {

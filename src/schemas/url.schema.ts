@@ -9,7 +9,7 @@ export const urlSchema = z.object({
   customCode: z
     .string()
     .min(3, 'Custom code must be at least 3 characters')
-    .max(20, 'Custom code must be less than 255 characters')
+    .max(20, 'Custom code must be less than 20 characters')
     .regex(/^[a-zA-Z0-9_-]+$/, 'Custom code must be alphanumeric or hyphen')
     .optional()
     .or(z.literal(''))
@@ -31,7 +31,7 @@ export const updateUrlSchema = z.object({
   customCode: z
     .string()
     .min(3, 'Custom code must be at least 3 characters')
-    .max(255, 'Custom code must be less than 255 characters')
+    .max(20, 'Custom code must be less than 20 characters')
     .regex(/^[a-zA-Z0-9_-]+$/, 'Custom code must be alphanumeric or hyphen')
 });
 
@@ -39,7 +39,7 @@ export const editUrlSchema = z.object({
   customCode: z
     .string()
     .min(3, 'Custom code must be at least 3 characters')
-    .max(255, 'Custom code must be less than 255 characters')
+    .max(20, 'Custom code must be less than 20 characters')
     .regex(/^[a-zA-Z0-9_-]+$/, 'Custom code must be alphanumeric or hyphen')
 });
 

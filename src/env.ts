@@ -13,7 +13,8 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
     RESEND_FROM_EMAIL: z.string(),
     BETTER_AUTH_URL: z.string(),
-    BETTER_AUTH_SECRET: z.string()
+    BETTER_AUTH_SECRET: z.string(),
+    GOOGLE_GEMINI_API_KEY: z.string()
   },
   /*
    * Environment variables available on the client (and server).
@@ -37,6 +38,7 @@ export const env = createEnv({
     RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    GOOGLE_GEMINI_API_KEY: process.env.GOOGLE_GEMINI_API_KEY
   }
 });

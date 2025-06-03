@@ -1,12 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Copy, QrCode } from 'lucide-react';
+import { AlertTriangle, Copy, QrCode } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { QRCodeModal } from '@/components/core/modals/qr-code-modal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -22,8 +23,6 @@ import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { useSession } from '@/lib/auth-client';
 import { urlSchema, type UrlSchemaType } from '@/schemas/url.schema';
 import { shortenUrlAction } from '@/server/actions/urls/shorten-url.action';
-
-import { QRCodeModal } from '../modals/qr-code-modal';
 
 interface ShortenedUrlResult {
   shortUrl: string;
@@ -42,6 +41,12 @@ export function UrlShortenerForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
+  const [flaggedInfo, setFlaggedInfo] = useState<{
+    flagged: boolean;
+    reason: string | null;
+    message: string | undefined;
+  } | null>(null);
+
   const [, copy] = useCopyToClipboard();
 
   const form = useForm<UrlSchemaType>({
@@ -70,6 +75,7 @@ export function UrlShortenerForm() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setFlaggedInfo(null);
 
     try {
       const response = await shortenUrlAction({
@@ -83,6 +89,17 @@ export function UrlShortenerForm() {
           shortCode: response.data.shortCode,
           customCode: data.customCode || undefined
         });
+
+        if (response.data.flagged) {
+          setFlaggedInfo({
+            flagged: response.data.flagged,
+            reason: response.data.flagReason,
+            message: response.data.message
+          });
+          toast.warning(response.data.message || 'This URL is flagged', {
+            description: response.data.flagReason
+          });
+        }
       } else {
         setError(response.error || 'Failed to shorten URL');
       }
@@ -197,6 +214,29 @@ export function UrlShortenerForm() {
                       <QrCode className='size-4' />
                     </Button>
                   </div>
+
+                  {flaggedInfo && flaggedInfo.flagged && (
+                    <div className='mt-3 rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/20'>
+                      <div className='flex items-start gap-2'>
+                        <AlertTriangle className='mt-0.5 size-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400' />
+                        <div>
+                          <p className='text-sm font-medium text-yellow-800 dark:text-yellow-300'>
+                            This URL has been flagged for review
+                          </p>
+                          <p className='mt-1 text-xs text-yellow-700 dark:text-yellow-400'>
+                            {flaggedInfo.message ||
+                              'This URL will be reviewed by an administrator before it becomes fully active.'}
+                          </p>
+                          {flaggedInfo.reason && (
+                            <p className='mt-2 text-sm text-yellow-600 dark:text-yellow-400'>
+                              <span className='font-medium'>Reason:</span>{' '}
+                              {flaggedInfo.reason || 'Unknown reason'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
