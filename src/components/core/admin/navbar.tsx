@@ -1,6 +1,6 @@
 import { SheetMenu } from '@/components/core/admin/sheet-menu';
 import { UserNav } from '@/components/core/auth/shared/user-nav';
-import { ModeToggle } from '@/components/mode-toggle';
+import { ModeToggle } from '@/components/ui/mode-toggle';
 
 interface NavbarProps {
   title: string;
@@ -14,7 +14,7 @@ export function Navbar({ title }: NavbarProps) {
           <SheetMenu />
           <h1 className='font-bold'>{title}</h1>
         </div>
-        <div className='flex flex-1 items-center justify-end'>
+        <div className='flex flex-1 items-center justify-end space-x-4'>
           <ModeToggle />
           <UserNav />
         </div>
