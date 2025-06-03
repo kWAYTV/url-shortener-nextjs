@@ -90,7 +90,11 @@ export const auth = betterAuth({
     nextCookies()
   ],
 
-  trustedOrigins: ['http://localhost:3000', 'https://trohs.zip']
+  trustedOrigins: [
+    'better-auth://',
+    'http://localhost:3000',
+    'https://trohs.zip'
+  ]
 });
 
 export type Session = typeof auth.$Infer.Session;
