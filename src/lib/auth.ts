@@ -47,7 +47,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     'better-auth://',
     'http://localhost:3000',
-    'https://www.trohs.zip'
+    env.NEXT_PUBLIC_APP_URL
   ],
 
   emailAndPassword: {
