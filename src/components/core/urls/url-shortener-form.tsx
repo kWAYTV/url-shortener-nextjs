@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle, Copy, Link, QrCode } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -35,6 +35,7 @@ interface ShortenedUrlResult {
 
 export function UrlShortenerForm() {
   const { data: session, isPending } = useSession();
+  const [isMounted, setIsMounted] = useState(false);
 
   const user = session?.user;
   const router = useRouter();
@@ -124,6 +125,10 @@ export function UrlShortenerForm() {
     }
   };
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <>
       <div>
@@ -162,7 +167,7 @@ export function UrlShortenerForm() {
               </Button>
             </div>
 
-            {isPending ? (
+            {!isMounted || isPending ? (
               <div className='flex items-center'>
                 <Skeleton className='mr-2 h-4 w-24' />
                 <Skeleton className='h-9 flex-1' />
