@@ -1,5 +1,5 @@
 'use client';
-import { PanelsTopLeft } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 import { Menu } from '@/components/core/admin/menu';
@@ -36,7 +36,7 @@ export function Sidebar() {
           asChild
         >
           <Link href='/dashboard' className='flex items-center gap-2'>
-            <PanelsTopLeft className='mr-1 h-6 w-6' />
+            <ArrowRight className='mr-1 h-6 w-6' />
             <h1
               className={cn(
                 'text-lg font-bold whitespace-nowrap transition-[transform,opacity,display] duration-300 ease-in-out',
