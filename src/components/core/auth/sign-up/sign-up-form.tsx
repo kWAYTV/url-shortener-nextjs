@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, LogIn, UserPlus, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -233,7 +233,10 @@ export default function SignUpForm() {
               {loading ? (
                 <Loader2 size={16} className='animate-spin' />
               ) : (
-                'Create an account'
+                <>
+                  <UserPlus className='size-4' />
+                  Create an account
+                </>
               )}
             </Button>
 
@@ -242,7 +245,10 @@ export default function SignUpForm() {
                 Already have an account?{' '}
               </span>
               <Button variant='link' asChild className='h-auto p-0 text-sm'>
-                <Link href='/sign-in'>Sign in</Link>
+                <Link href='/sign-in'>
+                  <LogIn className='size-4' />
+                  Sign in
+                </Link>
               </Button>
             </div>
           </form>

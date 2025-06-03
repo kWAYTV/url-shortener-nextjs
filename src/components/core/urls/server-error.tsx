@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, Home } from 'lucide-react';
+import { AlertTriangle, Home, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,7 @@ export function ServerError({ error }: ServerErrorProps) {
             </Link>
           </Button>
           <Button onClick={() => window.location.reload()} variant='secondary'>
+            <RotateCcw className='size-4' />
             Try Again
           </Button>
         </div>

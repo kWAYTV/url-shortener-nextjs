@@ -1,4 +1,4 @@
-import { Terminal } from 'lucide-react';
+import { Home, Terminal } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -44,7 +44,9 @@ export default function NotFound() {
             className='w-full rounded-none border-dashed'
             asChild
           >
-            <Link href='/'>$ cd /home</Link>
+            <Link href='/' className='flex items-center gap-2'>
+              <Home className='size-4' />$ cd /home
+            </Link>
           </Button>
         </CardFooter>
       </Card>

@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertTriangle, Copy, QrCode } from 'lucide-react';
+import { AlertTriangle, Copy, Link, QrCode } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -150,7 +150,10 @@ export function UrlShortenerForm() {
                     Shortening...
                   </>
                 ) : (
-                  'Shorten'
+                  <>
+                    <Link className='size-4' />
+                    Shorten
+                  </>
                 )}
               </Button>
             </div>

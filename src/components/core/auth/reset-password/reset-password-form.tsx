@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { ArrowLeft, KeyRound, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -133,14 +133,21 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               {isPending ? (
                 <Loader2 size={16} className='animate-spin' />
               ) : (
-                'Reset Password'
+                <>
+                  <KeyRound className='size-4' />
+                  Reset Password
+                </>
               )}
             </Button>
 
             <Separator />
 
             <div className='text-center'>
-              <Link href='/sign-in' className='text-sm underline'>
+              <Link
+                href='/sign-in'
+                className='flex items-center justify-center gap-1 text-sm underline'
+              >
+                <ArrowLeft className='size-4' />
                 Back to Sign In
               </Link>
             </div>

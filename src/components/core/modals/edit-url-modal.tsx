@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -121,6 +121,7 @@ export function EditUrlModal({
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
               >
+                <X className='size-4' />
                 Cancel
               </Button>
               <Button type='submit' disabled={isLoading}>
@@ -130,7 +131,10 @@ export function EditUrlModal({
                     Updating...
                   </>
                 ) : (
-                  'Save Changes'
+                  <>
+                    <Save className='size-4' />
+                    Save Changes
+                  </>
                 )}
               </Button>
             </DialogFooter>

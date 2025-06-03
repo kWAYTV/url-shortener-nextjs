@@ -1,3 +1,4 @@
+import { ArrowLeft, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -26,10 +27,15 @@ export default function EmailSent({ onSendAnother }: EmailSentProps) {
               onClick={onSendAnother}
               className='w-full'
             >
+              <RotateCcw className='size-4' />
               Send Another Link
             </Button>
             <div className='text-center'>
-              <Link href='/sign-in' className='text-sm underline'>
+              <Link
+                href='/sign-in'
+                className='flex items-center justify-center gap-1 text-sm underline'
+              >
+                <ArrowLeft className='size-4' />
                 Back to Sign In
               </Link>
             </div>

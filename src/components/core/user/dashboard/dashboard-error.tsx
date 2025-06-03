@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Home, LogIn } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -35,10 +35,16 @@ export function DashboardError({ error }: DashboardErrorProps) {
             {/* Action Buttons */}
             <div className='flex flex-col gap-3 sm:flex-row'>
               <Button asChild className='flex-1'>
-                <Link href='/sign-in'>Sign In Again</Link>
+                <Link href='/sign-in' className='flex items-center gap-2'>
+                  <LogIn className='size-4' />
+                  Sign In Again
+                </Link>
               </Button>
               <Button asChild variant='outline' className='flex-1'>
-                <Link href='/'>Back to Home</Link>
+                <Link href='/' className='flex items-center gap-2'>
+                  <Home className='size-4' />
+                  Back to Home
+                </Link>
               </Button>
             </div>
           </CardContent>

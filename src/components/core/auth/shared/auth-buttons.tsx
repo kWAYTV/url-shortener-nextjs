@@ -1,5 +1,6 @@
 'use client';
 
+import { LogIn, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 
 import { UserNav } from '@/components/core/auth/shared/user-nav';
@@ -15,10 +16,16 @@ export default function AuthButtons() {
   return !session ? (
     <div className='flex justify-center gap-2'>
       <Link href='/sign-in'>
-        <Button variant='link'>Sign In</Button>
+        <Button variant='link'>
+          <LogIn className='size-4' />
+          Sign In
+        </Button>
       </Link>
       <Link href='/sign-up'>
-        <Button variant='link'>Sign Up</Button>
+        <Button variant='link'>
+          <UserPlus className='size-4' />
+          Sign Up
+        </Button>
       </Link>
     </div>
   ) : (

@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -108,14 +108,21 @@ export default function ForgotPasswordForm() {
               {isPending ? (
                 <Loader2 size={16} className='animate-spin' />
               ) : (
-                'Send Reset Link'
+                <>
+                  <Mail className='size-4' />
+                  Send Reset Link
+                </>
               )}
             </Button>
 
             <Separator />
 
             <div className='text-center'>
-              <Link href='/sign-in' className='text-sm underline'>
+              <Link
+                href='/sign-in'
+                className='flex items-center justify-center gap-1 text-sm underline'
+              >
+                <ArrowLeft className='size-4' />
                 Back to Sign In
               </Link>
             </div>
