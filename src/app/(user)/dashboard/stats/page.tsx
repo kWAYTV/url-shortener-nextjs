@@ -3,12 +3,12 @@
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import PrivateStatsLoading from '@/components/core/private-stats/loading';
-import PerformanceAnalytics from '@/components/core/private-stats/performance-analytics';
-import StatsCards from '@/components/core/private-stats/stats-cards';
+import PrivateStatsLoading from '@/components/core/stats/private-stats/loading';
+import PerformanceAnalytics from '@/components/core/stats/private-stats/performance-analytics';
+import StatsCards from '@/components/core/stats/private-stats/stats-cards';
 // Import reusable components
-import StatsHeader from '@/components/core/private-stats/stats-header';
-import TopUrlsList from '@/components/core/private-stats/top-urls-list';
+import StatsHeader from '@/components/core/stats/private-stats/stats-header';
+import TopUrlsList from '@/components/core/stats/private-stats/top-urls-list';
 import { useSession } from '@/lib/auth-client';
 import { getUserUrlsAction } from '@/server/actions/urls/get-user-urls.action';
 

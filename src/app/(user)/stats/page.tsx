@@ -1,10 +1,9 @@
 import { count, sql } from 'drizzle-orm';
 import { type Metadata } from 'next';
 
-import AuthPromotionCard from '@/components/core/public-stats/auth-promotion-card';
-import PublicStatsCards from '@/components/core/public-stats/public-stats-cards';
-// Import reusable components
-import PublicStatsHeader from '@/components/core/public-stats/public-stats-header';
+import AuthPromotionCard from '@/components/core/stats/public-stats/auth-promotion-card';
+import PublicStatsCards from '@/components/core/stats/public-stats/public-stats-cards';
+import PublicStatsHeader from '@/components/core/stats/public-stats/public-stats-header';
 import { db } from '@/lib/db';
 import { urls } from '@/schemas/db.schema';
 
