@@ -11,7 +11,7 @@ export function Footer() {
               href='/'
               className='text-foreground text-lg font-bold transition-transform duration-200 ease-in-out hover:scale-110'
             >
-              trohs.zip
+              url.io
             </Link>
             <span className='hidden md:inline'>•</span>
             <Link

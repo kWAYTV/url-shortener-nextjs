@@ -45,7 +45,7 @@ export function Sidebar() {
                   : 'translate-x-0 opacity-100'
               )}
             >
-              trohs.zip
+              url.io
             </h1>
           </Link>
         </Button>

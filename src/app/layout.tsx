@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'trohs.zip',
+  title: 'url.io',
   description: 'NextJS URL shortener built with better-auth.'
 };
 

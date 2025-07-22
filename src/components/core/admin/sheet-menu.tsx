@@ -28,7 +28,7 @@ export function SheetMenu() {
           >
             <Link href='/dashboard' className='flex items-center gap-2'>
               <PanelsTopLeft className='mr-1 h-6 w-6' />
-              <SheetTitle className='text-lg font-bold'>trohs.zip</SheetTitle>
+              <SheetTitle className='text-lg font-bold'>url.io</SheetTitle>
             </Link>
           </Button>
         </SheetHeader>
