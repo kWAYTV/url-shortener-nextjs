@@ -45,7 +45,7 @@ export function Sidebar() {
                   : 'translate-x-0 opacity-100'
               )}
             >
-              url.io
+              aris.sh
             </h1>
           </Link>
         </Button>

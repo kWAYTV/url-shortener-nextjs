@@ -23,7 +23,7 @@ export default function Navbar() {
           href='/'
           className='text-xl font-bold transition-transform duration-200 ease-in-out hover:scale-110'
         >
-          url.io
+          aris.sh
         </Link>
 
         {/* Desktop nav */}

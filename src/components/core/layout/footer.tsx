@@ -11,7 +11,7 @@ export default function Footer() {
               href='/'
               className='text-foreground text-xl font-bold transition-transform duration-200 ease-in-out hover:scale-110'
             >
-              url.io
+              aris.sh
             </Link>
             <span className='hidden md:inline'>•</span>
             <Link
@@ -34,7 +34,7 @@ export default function Footer() {
             </p>
             <span className='hidden md:inline'>•</span>
             <p className='hidden md:block'>
-              © {new Date().getFullYear()} url.io
+              © {new Date().getFullYear()} aris.sh
             </p>
           </div>
         </div>
